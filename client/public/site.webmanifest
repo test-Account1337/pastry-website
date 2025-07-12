@@ -1,0 +1,16 @@
+{
+  "name": "Salma Pastry News",
+  "short_name": "PastryNews",
+  "description": "Latest news and articles about pastries, baking, and culinary arts",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fef7f0",
+  "theme_color": "#8b5a3c",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+} 
