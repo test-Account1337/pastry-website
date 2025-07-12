@@ -12,7 +12,7 @@ pnpm-debug.log*
 
 # Client folder (if you want to ignore the entire client directory)
 # /client/
-client\node_modules
+client/node_modules
 # Environment variables
 # .env
 .env.local
