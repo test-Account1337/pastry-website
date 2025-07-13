@@ -365,6 +365,12 @@ class Article {
     await article.incrementLikes();
     return true;
   }
+
+  // Create article (static method)
+  static async create(data) {
+    const article = new Article(data);
+    return await article.save();
+  }
 }
 
 module.exports = Article; 

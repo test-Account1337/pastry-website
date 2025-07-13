@@ -21,6 +21,24 @@ router.get('/', async (req, res) => {
   }
 });
 
+// @route   GET /api/categories/admin
+// @desc    Get all categories for admin (including inactive)
+// @access  Private (Admin/Editor)
+router.get('/admin', [
+  authenticateToken,
+  requireAdminOrEditor
+], async (req, res) => {
+  try {
+    const categories = await Category.findAll();
+    res.json({ categories });
+  } catch (error) {
+    console.error('Get admin categories error:', error);
+    res.status(500).json({ 
+      message: 'Server error' 
+    });
+  }
+});
+
 // @route   GET /api/categories/:slug
 // @desc    Get category by slug
 // @access  Public

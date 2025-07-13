@@ -219,6 +219,12 @@ class Category {
     await category.delete();
     return true;
   }
+
+  // Create category (static method)
+  static async create(data) {
+    const category = new Category(data);
+    return await category.save();
+  }
 }
 
 module.exports = Category; 

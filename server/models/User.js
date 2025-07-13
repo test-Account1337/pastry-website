@@ -163,6 +163,12 @@ class User {
     await user.delete();
     return true;
   }
+
+  // Create user (static method)
+  static async create(data) {
+    const user = new User(data);
+    return await user.save();
+  }
 }
 
 module.exports = User; 
