@@ -1,13 +1,14 @@
 import axios from 'axios';
 
-// API URL configuration with fallback
+// API URL configuration based on environment variable
 const getApiUrl = () => {
-  // Priority order: Railway URL > Environment variable > localhost fallback
-  const railwayUrl = import.meta.env.VITE_RAILWAY_URL;
-  const envUrl = import.meta.env.VITE_API_URL;
-  const fallbackUrl = 'http://localhost:5000';
+  const useRailway = import.meta.env.VITE_USE_RAILWAY === 'true';
   
-  return railwayUrl || envUrl || fallbackUrl;
+  if (useRailway) {
+    return import.meta.env.VITE_RAILWAY_URL || 'https://pastry-website-production.up.railway.app';
+  } else {
+    return import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  }
 };
 
 // Create axios instance with dynamic base URL
@@ -81,21 +82,9 @@ const setupInterceptors = () => {
         return Promise.reject(error);
       }
       
-      // Handle network errors with automatic fallback
-      if (!error.response && error.code === 'ECONNABORTED') {
-        console.warn('Request timeout, checking for fallback...');
-        
-        // Try to switch to localhost if we're not already there
-        if (currentApiUrl !== 'http://localhost:5000') {
-          const localhostHealthy = await checkApiHealth('http://localhost:5000');
-          if (localhostHealthy) {
-            await switchApiUrl('http://localhost:5000');
-            // Retry the original request
-            const originalConfig = error.config;
-            originalConfig.baseURL = 'http://localhost:5000';
-            return api.request(originalConfig);
-          }
-        }
+      // Handle network errors
+      if (!error.response && (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK')) {
+        console.error('❌ API request failed. Check your VITE_USE_RAILWAY configuration.');
       }
       
       // Handle other network errors
@@ -111,33 +100,19 @@ const setupInterceptors = () => {
 // Initialize interceptors
 setupInterceptors();
 
-// Auto-detect best API URL on app startup
+// Initialize API based on environment variable
 export const initializeApi = async () => {
-  const railwayUrl = import.meta.env.VITE_RAILWAY_URL;
-  const envUrl = import.meta.env.VITE_API_URL;
+  const useRailway = import.meta.env.VITE_USE_RAILWAY === 'true';
+  const apiUrl = getApiUrl();
   
-  if (railwayUrl) {
-    console.log('Checking Railway API health...');
-    const railwayHealthy = await checkApiHealth(railwayUrl);
-    if (railwayHealthy) {
-      await switchApiUrl(railwayUrl);
-      console.log('✅ Using Railway API');
-      return;
-    }
+  if (useRailway) {
+    console.log('🔧 Using Railway API (configured via VITE_USE_RAILWAY)');
+  } else {
+    console.log('🔧 Using localhost API (configured via VITE_USE_RAILWAY)');
   }
   
-  if (envUrl && envUrl !== 'http://localhost:5000') {
-    console.log('Checking environment API health...');
-    const envHealthy = await checkApiHealth(envUrl);
-    if (envHealthy) {
-      await switchApiUrl(envUrl);
-      console.log('✅ Using environment API');
-      return;
-    }
-  }
-  
-  console.log('✅ Using localhost API (fallback)');
-  await switchApiUrl('http://localhost:5000');
+  await switchApiUrl(apiUrl);
+  console.log(`✅ API initialized: ${apiUrl.replace(/^https?:\/\//, '')}`);
 };
 
 // API endpoints

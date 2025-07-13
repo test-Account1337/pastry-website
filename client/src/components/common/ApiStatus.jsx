@@ -7,28 +7,58 @@ const ApiStatus = () => {
   useEffect(() => {
     const checkApiStatus = async () => {
       try {
-        // Get the current API URL from localStorage or default
-        const currentUrl = localStorage.getItem('currentApiUrl') || 'http://localhost:5000';
+        // Get the current API URL from localStorage
+        const currentUrl = localStorage.getItem('currentApiUrl');
+        
+        // If no URL is set yet, wait a bit and try again
+        if (!currentUrl) {
+          setTimeout(checkApiStatus, 1000);
+          return;
+        }
+        
         setApiUrl(currentUrl);
         
-        // Check health
-        const response = await fetch(`${currentUrl}/api/health`);
-        if (response.ok) {
+        // Check health based on environment configuration
+        const useRailway = import.meta.env.VITE_USE_RAILWAY === 'true';
+        
+        if (useRailway) {
+          // For Railway, assume connected (no health check needed)
           setStatus('connected');
         } else {
-          setStatus('error');
+          // For localhost, check health
+          const response = await fetch(`${currentUrl}/api/health`);
+          if (response.ok) {
+            setStatus('connected');
+          } else {
+            setStatus('error');
+          }
         }
       } catch (error) {
-        setStatus('error');
+        const useRailway = import.meta.env.VITE_USE_RAILWAY === 'true';
+        if (!useRailway) {
+          setStatus('error');
+        }
       }
     };
 
+    // Initial check
     checkApiStatus();
     
-    // Check every 30 seconds
-    const interval = setInterval(checkApiStatus, 30000);
+    // Check every 30 seconds, but only if using localhost
+    const interval = setInterval(() => {
+      const useRailway = import.meta.env.VITE_USE_RAILWAY === 'true';
+      if (!useRailway) {
+        checkApiStatus();
+      }
+    }, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // Don't show anything if using Railway
+  const useRailway = import.meta.env.VITE_USE_RAILWAY === 'true';
+  if (useRailway) {
+    return null;
+  }
 
   // Only show in development
   if (import.meta.env.PROD) {

@@ -43,6 +43,9 @@ Create a `.env` file in the `client` directory:
 VITE_API_URL=http://localhost:5000
 VITE_RAILWAY_URL=https://your-railway-backend-app.up.railway.app
 VITE_FRONTEND_URL=http://localhost:3000
+
+# API Configuration
+VITE_USE_RAILWAY=true  # Set to 'false' for localhost, 'true' for Railway
 ```
 
 ### 2. Update CORS in Backend
@@ -63,18 +66,26 @@ app.use(cors({
 
 ## How It Works
 
-The frontend automatically detects the best available API endpoint:
+The frontend uses environment variables to determine which API to use:
 
-1. **Railway URL** (if `VITE_RAILWAY_URL` is set and healthy)
-2. **Environment URL** (if `VITE_API_URL` is set and healthy)
-3. **Localhost fallback** (if Railway is unavailable)
+1. **Railway API** (when `VITE_USE_RAILWAY=true`)
+2. **Localhost API** (when `VITE_USE_RAILWAY=false`)
 
 ### Features:
-- ✅ Automatic health checks on startup
-- ✅ Automatic fallback to localhost if Railway is down
-- ✅ Visual indicator showing which API is being used (development only)
-- ✅ Automatic retry with fallback on timeout errors
-- ✅ Real-time API status monitoring
+- ✅ Simple environment-based configuration
+- ✅ No automatic fallback (explicit control)
+- ✅ Visual indicator for localhost (development only)
+- ✅ Clean separation between environments
+- ✅ Easy switching with `./switch-env.sh` script
+
+### Quick Switching:
+```bash
+# Switch to Railway
+./switch-env.sh railway
+
+# Switch to localhost
+./switch-env.sh localhost
+```
 
 ### Development Indicator
 In development mode, you'll see a small indicator in the bottom-right corner showing:

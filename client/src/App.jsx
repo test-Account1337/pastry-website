@@ -35,6 +35,9 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 import ApiStatus from './components/common/ApiStatus';
 
 function App() {
+  const useRailway = import.meta.env.VITE_USE_RAILWAY === 'true';
+  const showApiStatus = !useRailway; // Only show ApiStatus for localhost
+
   return (
     <AuthProvider>
       <Helmet>
@@ -101,8 +104,8 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       
-      {/* API Status Indicator (development only) */}
-      <ApiStatus />
+      {/* API Status Indicator (development only) - hidden when using Railway */}
+      {showApiStatus && <ApiStatus />}
     </AuthProvider>
   );
 }
