@@ -1,111 +1,168 @@
-const mongoose = require('mongoose');
+const { db } = require('../config/firebase');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: [true, 'Username is required'],
-    unique: true,
-    trim: true,
-    minlength: [3, 'Username must be at least 3 characters long'],
-    maxlength: [30, 'Username cannot exceed 30 characters']
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    lowercase: true,
-    trim: true,
-    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-    minlength: [6, 'Password must be at least 6 characters long']
-  },
-  firstName: {
-    type: String,
-    required: [true, 'First name is required'],
-    trim: true,
-    maxlength: [50, 'First name cannot exceed 50 characters']
-  },
-  lastName: {
-    type: String,
-    required: [true, 'Last name is required'],
-    trim: true,
-    maxlength: [50, 'Last name cannot exceed 50 characters']
-  },
-  role: {
-    type: String,
-    enum: ['admin', 'editor', 'author'],
-    default: 'author'
-  },
-  avatar: {
-    type: String,
-    default: null
-  },
-  bio: {
-    type: String,
-    maxlength: [500, 'Bio cannot exceed 500 characters']
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  lastLogin: {
-    type: Date,
-    default: null
-  },
-  passwordResetToken: String,
-  passwordResetExpires: Date,
-  emailVerified: {
-    type: Boolean,
-    default: false
+class User {
+  constructor(data = {}) {
+    this.id = data.id || null;
+    this.username = data.username || '';
+    this.email = data.email || '';
+    this.password = data.password || '';
+    this.firstName = data.firstName || '';
+    this.lastName = data.lastName || '';
+    this.role = data.role || 'author';
+    this.avatar = data.avatar || null;
+    this.bio = data.bio || '';
+    this.isActive = data.isActive !== undefined ? data.isActive : true;
+    this.lastLogin = data.lastLogin || null;
+    this.passwordResetToken = data.passwordResetToken || null;
+    this.passwordResetExpires = data.passwordResetExpires || null;
+    this.emailVerified = data.emailVerified !== undefined ? data.emailVerified : false;
+    this.createdAt = data.createdAt || new Date();
+    this.updatedAt = data.updatedAt || new Date();
   }
-}, {
-  timestamps: true
-});
 
-// Virtual for full name
-userSchema.virtual('fullName').get(function() {
-  return `${this.firstName} ${this.lastName}`;
-});
-
-// Index for better query performance
-userSchema.index({ email: 1 });
-userSchema.index({ username: 1 });
-userSchema.index({ role: 1 });
-
-// Pre-save middleware to hash password
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
-  try {
-    const salt = await bcrypt.genSalt(12);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
+  // Get full name
+  get fullName() {
+    return `${this.firstName} ${this.lastName}`;
   }
-});
 
-// Method to compare password
-userSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
-};
+  // Hash password before saving
+  async hashPassword() {
+    if (this.password && !this.password.startsWith('$2')) {
+      const salt = await bcrypt.genSalt(12);
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+  }
 
-// Method to get public profile (without sensitive data)
-userSchema.methods.toPublicJSON = function() {
-  const userObject = this.toObject();
-  delete userObject.password;
-  delete userObject.passwordResetToken;
-  delete userObject.passwordResetExpires;
-  return userObject;
-};
+  // Compare password
+  async comparePassword(candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+  }
 
-// Static method to find by email
-userSchema.statics.findByEmail = function(email) {
-  return this.findOne({ email: email.toLowerCase() });
-};
+  // Convert to public JSON (without sensitive data)
+  toPublicJSON() {
+    const { password, passwordResetToken, passwordResetExpires, ...publicData } = this;
+    return publicData;
+  }
 
-module.exports = mongoose.model('User', userSchema); 
+  // Save user to Realtime Database
+  async save() {
+    await this.hashPassword();
+    
+    const userData = {
+      username: this.username,
+      email: this.email.toLowerCase(),
+      password: this.password,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      role: this.role,
+      avatar: this.avatar,
+      bio: this.bio,
+      isActive: this.isActive,
+      lastLogin: this.lastLogin,
+      passwordResetToken: this.passwordResetToken,
+      passwordResetExpires: this.passwordResetExpires,
+      emailVerified: this.emailVerified,
+      createdAt: this.createdAt,
+      updatedAt: new Date()
+    };
+
+    if (this.id) {
+      // Update existing user
+      await db.ref(`users/${this.id}`).update(userData);
+      this.updatedAt = userData.updatedAt;
+    } else {
+      // Create new user
+      const userRef = await db.ref('users').push(userData);
+      this.id = userRef.key;
+      this.createdAt = userData.createdAt;
+      this.updatedAt = userData.updatedAt;
+    }
+
+    return this;
+  }
+
+  // Find user by ID
+  static async findById(id) {
+    const snapshot = await db.ref(`users/${id}`).once('value');
+    if (!snapshot.exists()) return null;
+    
+    return new User({ id: snapshot.key, ...snapshot.val() });
+  }
+
+  // Find user by email
+  static async findByEmail(email) {
+    const snapshot = await db.ref('users')
+      .orderByChild('email')
+      .equalTo(email.toLowerCase())
+      .once('value');
+    
+    if (!snapshot.exists()) return null;
+    
+    const userData = snapshot.val();
+    const userId = Object.keys(userData)[0];
+    return new User({ id: userId, ...userData[userId] });
+  }
+
+  // Find user by username
+  static async findByUsername(username) {
+    const snapshot = await db.ref('users')
+      .orderByChild('username')
+      .equalTo(username)
+      .once('value');
+    
+    if (!snapshot.exists()) return null;
+    
+    const userData = snapshot.val();
+    const userId = Object.keys(userData)[0];
+    return new User({ id: userId, ...userData[userId] });
+  }
+
+  // Find all users
+  static async findAll() {
+    const snapshot = await db.ref('users').once('value');
+    if (!snapshot.exists()) return [];
+    
+    const users = [];
+    snapshot.forEach((childSnapshot) => {
+      users.push(new User({ id: childSnapshot.key, ...childSnapshot.val() }));
+    });
+    
+    return users;
+  }
+
+  // Delete user
+  async delete() {
+    if (this.id) {
+      await db.ref(`users/${this.id}`).remove();
+    }
+  }
+
+  // Update user (instance method)
+  async update(updates) {
+    Object.assign(this, updates);
+    this.updatedAt = new Date();
+    return await this.save();
+  }
+
+  // Update user (static method)
+  static async update(id, updates) {
+    const user = await User.findById(id);
+    if (!user) return null;
+    
+    Object.assign(user, updates);
+    user.updatedAt = new Date();
+    return await user.save();
+  }
+
+  // Delete user (static method)
+  static async delete(id) {
+    const user = await User.findById(id);
+    if (!user) return false;
+    
+    await user.delete();
+    return true;
+  }
+}
+
+module.exports = User; 

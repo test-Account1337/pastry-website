@@ -37,14 +37,14 @@ const AdminDashboard = () => {
 
   const stats = [
     {
-      name: 'Total Articles',
+      name: 'Total News',
       value: dashboardData?.stats?.totalArticles || 0,
       icon: FiFileText,
       color: 'bg-blue-500',
       href: '/admin/articles'
     },
     {
-      name: 'Published Articles',
+      name: 'Published News',
       value: dashboardData?.stats?.publishedArticles || 0,
       icon: FiEye,
       color: 'bg-green-500',
@@ -68,25 +68,25 @@ const AdminDashboard = () => {
 
   const quickActions = [
     {
-      name: 'Create Article',
-      description: 'Write a new article',
+      name: 'Create News',
+      description: 'Write a new news item',
       icon: FiPlus,
       href: '/admin/articles/new',
-      color: 'bg-mocha-500 hover:bg-mocha-600'
+      color: 'bg-eternity-600 hover:bg-eternity-700'
     },
     {
       name: 'Add Category',
       description: 'Create a new category',
       icon: FiFolder,
       href: '/admin/categories',
-      color: 'bg-pink-500 hover:bg-pink-600'
+      color: 'bg-alpine-500 hover:bg-alpine-600'
     },
     {
       name: 'Manage Users',
       description: 'View and manage users',
       icon: FiUsers,
       href: '/admin/users',
-      color: 'bg-vanilla-500 hover:bg-vanilla-600'
+      color: 'bg-tabasco-500 hover:bg-tabasco-600'
     },
   ];
 
@@ -97,17 +97,17 @@ const AdminDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard - Pastry News Admin</title>
+        <title>Dashboard - UACP Admin</title>
       </Helmet>
 
       <div className="w-full max-w-5xl mx-auto px-4 py-8 space-y-10">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-display font-bold text-mocha-700 mb-2">
+          <h1 className="text-3xl font-display font-bold text-eternity-700 mb-2">
             Dashboard
           </h1>
-          <p className="text-mocha-600">
-            Welcome back! Here's what's happening with your pastry news site.
+          <p className="text-eternity-600">
+            Welcome back! Here's what's happening with your UACP news site.
           </p>
         </div>
 
@@ -124,8 +124,8 @@ const AdminDashboard = () => {
               <Link to={stat.href} className="block">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-mocha-600">{stat.name}</p>
-                    <p className="text-3xl font-bold text-mocha-700">{stat.value}</p>
+                    <p className="text-sm font-medium text-eternity-600">{stat.name}</p>
+                    <p className="text-3xl font-bold text-eternity-700">{stat.value}</p>
                   </div>
                   <div className={`p-3 rounded-lg ${stat.color} text-white`}>
                     <stat.icon className="w-6 h-6" />
@@ -152,8 +152,8 @@ const AdminDashboard = () => {
                     <action.icon className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-mocha-700">{action.name}</h3>
-                    <p className="text-sm text-mocha-600">{action.description}</p>
+                    <h3 className="text-lg font-semibold text-eternity-700">{action.name}</h3>
+                    <p className="text-sm text-eternity-600">{action.description}</p>
                   </div>
                 </div>
               </Link>
@@ -165,25 +165,25 @@ const AdminDashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="card p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-display font-bold text-mocha-700">Recent Articles</h2>
+              <h2 className="text-xl font-display font-bold text-eternity-700">Recent News</h2>
               <Link
                 to="/admin/articles"
-                className="text-sm text-mocha-600 hover:text-mocha-800 font-medium"
+                className="text-sm text-eternity-600 hover:text-eternity-800 font-medium"
               >
                 View All →
               </Link>
             </div>
             <div className="space-y-4">
               {dashboardData?.articles?.slice(0, 5).map((article) => (
-                <div key={article._id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-cream-50">
-                  <div className="w-12 h-12 bg-cream-200 rounded-lg flex items-center justify-center">
-                    <FiFileText className="w-5 h-5 text-mocha-600" />
+                <div key={article._id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-sidecar-100">
+                  <div className="w-12 h-12 bg-sidecar-200 rounded-lg flex items-center justify-center">
+                    <FiFileText className="w-5 h-5 text-eternity-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-mocha-700 truncate">
+                    <h3 className="text-sm font-medium text-eternity-700 truncate">
                       {article.title}
                     </h3>
-                    <p className="text-xs text-mocha-500">
+                    <p className="text-xs text-eternity-500">
                       {article.author?.firstName} {article.author?.lastName} • {article.status}
                     </p>
                   </div>
@@ -200,25 +200,25 @@ const AdminDashboard = () => {
 
           <div className="card p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-display font-bold text-mocha-700">Recent Users</h2>
+              <h2 className="text-xl font-display font-bold text-eternity-700">Recent Users</h2>
               <Link
                 to="/admin/users"
-                className="text-sm text-mocha-600 hover:text-mocha-800 font-medium"
+                className="text-sm text-eternity-600 hover:text-eternity-800 font-medium"
               >
                 View All →
               </Link>
             </div>
             <div className="space-y-4">
               {dashboardData?.users?.slice(0, 5).map((user) => (
-                <div key={user._id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-cream-50">
-                  <div className="w-12 h-12 bg-mocha-100 rounded-full flex items-center justify-center">
-                    <FiUsers className="w-5 h-5 text-mocha-600" />
+                <div key={user._id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-sidecar-100">
+                  <div className="w-12 h-12 bg-eternity-100 rounded-full flex items-center justify-center">
+                    <FiUsers className="w-5 h-5 text-eternity-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium text-mocha-700">
+                    <h3 className="text-sm font-medium text-eternity-700">
                       {user.firstName} {user.lastName}
                     </h3>
-                    <p className="text-xs text-mocha-500">{user.email}</p>
+                    <p className="text-xs text-eternity-500">{user.email}</p>
                   </div>
                   <div className="badge badge-primary capitalize">
                     {user.role}

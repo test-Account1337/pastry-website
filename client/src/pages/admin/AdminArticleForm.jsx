@@ -185,18 +185,18 @@ const AdminArticleForm = () => {
   return (
     <>
       <Helmet>
-        <title>{isEditing ? 'Edit Article' : 'New Article'} - Admin Dashboard</title>
+        <title>{isEditing ? 'Edit News' : 'New News'} - UACP Admin</title>
       </Helmet>
 
       <div className="p-6">
         {/* Header */}
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-mocha-700 mb-2">
-              {isEditing ? 'Edit Article' : 'New Article'}
+            <h1 className="text-3xl font-bold text-eternity-700 mb-2">
+              {isEditing ? 'Edit News' : 'New News'}
             </h1>
-            <p className="text-mocha-600">
-              {isEditing ? 'Update your article content and settings' : 'Create a new article for your readers'}
+            <p className="text-eternity-600">
+              {isEditing ? 'Update your news content and settings' : 'Create a new news item for your readers'}
             </p>
           </div>
           

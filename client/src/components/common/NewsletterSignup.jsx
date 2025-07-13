@@ -33,7 +33,7 @@ const NewsletterSignup = () => {
   };
 
   return (
-    <section className="bg-gradient-to-r from-mocha-600 to-mocha-700 text-white py-16">
+    <section className="bg-gradient-to-r from-eternity-700 to-eternity-800 text-white py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <motion.div
@@ -44,15 +44,15 @@ const NewsletterSignup = () => {
             className="mb-8"
           >
             <div className="flex justify-center mb-4">
-              <div className="bg-pink-200 p-3 rounded-full">
-                <FiMail className="w-8 h-8 text-mocha-600" />
+              <div className="bg-alpine-200 p-3 rounded-full">
+                <FiMail className="w-8 h-8 text-eternity-700" />
               </div>
             </div>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Stay Sweet & Updated! 🍰
+              Stay Connected & Updated! 👨‍🍳
             </h2>
-            <p className="text-xl text-mocha-200 max-w-2xl mx-auto">
-              Get the latest pastry news, exclusive recipes, and industry insights delivered straight to your inbox
+            <p className="text-xl text-sidecar-300 max-w-2xl mx-auto">
+              Get the latest culinary news, exclusive recipes, and industry insights delivered straight to your inbox
             </p>
           </motion.div>
 
@@ -71,7 +71,7 @@ const NewsletterSignup = () => {
                   placeholder="Your name (optional)"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg text-mocha-700 placeholder-mocha-400 focus:outline-none focus:ring-2 focus:ring-pink-300"
+                  className="w-full px-4 py-3 rounded-lg text-eternity-700 placeholder-eternity-400 focus:outline-none focus:ring-2 focus:ring-alpine-300"
                 />
               </div>
               <div className="flex-1">
@@ -81,13 +81,13 @@ const NewsletterSignup = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 rounded-lg text-mocha-700 placeholder-mocha-400 focus:outline-none focus:ring-2 focus:ring-pink-300"
+                  className="w-full px-4 py-3 rounded-lg text-eternity-700 placeholder-eternity-400 focus:outline-none focus:ring-2 focus:ring-alpine-300"
                 />
               </div>
               <button
                 type="submit"
                 disabled={subscribeMutation.isLoading}
-                className="btn-primary bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="btn-primary bg-alpine-500 hover:bg-alpine-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {subscribeMutation.isLoading ? (
                   <div className="loading-spinner w-5 h-5"></div>
@@ -100,7 +100,7 @@ const NewsletterSignup = () => {
               </button>
             </div>
             
-            <p className="text-sm text-mocha-300 mt-4">
+            <p className="text-sm text-sidecar-300 mt-4">
               We respect your privacy. Unsubscribe at any time.
             </p>
           </motion.form>
@@ -115,22 +115,22 @@ const NewsletterSignup = () => {
             <div className="text-center">
               <div className="text-2xl mb-2">🎂</div>
               <h3 className="font-semibold mb-2">Exclusive Recipes</h3>
-              <p className="text-sm text-mocha-300">
-                Get access to premium pastry recipes from top chefs
+              <p className="text-sm text-sidecar-300">
+                Get access to premium African recipes from top chefs
               </p>
             </div>
             <div className="text-center">
               <div className="text-2xl mb-2">👨‍🍳</div>
               <h3 className="font-semibold mb-2">Chef Interviews</h3>
-              <p className="text-sm text-mocha-300">
-                Behind-the-scenes insights from pastry masters
+              <p className="text-sm text-sidecar-300">
+                Behind-the-scenes insights from African culinary masters
               </p>
             </div>
             <div className="text-center">
               <div className="text-2xl mb-2">📈</div>
               <h3 className="font-semibold mb-2">Industry Trends</h3>
-              <p className="text-sm text-mocha-300">
-                Stay ahead with the latest pastry innovations
+              <p className="text-sm text-sidecar-300">
+                Stay ahead with the latest African culinary innovations
               </p>
             </div>
           </motion.div>

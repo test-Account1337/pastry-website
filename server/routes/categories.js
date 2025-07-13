@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const Category = require('../models/Category');
+const Article = require('../models/Article');
 const { authenticateToken, requireAdminOrEditor } = require('../middleware/auth');
 
 const router = express.Router();
@@ -25,10 +26,10 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/:slug', async (req, res) => {
   try {
-    const category = await Category.findOne({ 
-      slug: req.params.slug,
-      isActive: true 
-    });
+    const categories = await Category.findAll();
+    const category = categories.find(cat => 
+      cat.slug === req.params.slug && cat.isActive
+    );
 
     if (!category) {
       return res.status(404).json({ 
@@ -56,7 +57,8 @@ router.post('/', [
   body('color').optional().matches(/^#[0-9A-F]{6}$/i),
   body('icon').optional().isString(),
   body('sortOrder').optional().isInt({ min: 0 }),
-  body('parentCategory').optional().isMongoId()
+  body('parentCategory').optional().isString(),
+  body('isActive').optional().isBoolean()
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -74,6 +76,7 @@ router.post('/', [
       icon = '🍰',
       sortOrder = 0,
       parentCategory,
+      isActive = true,
       metaTitle,
       metaDescription
     } = req.body;
@@ -89,18 +92,22 @@ router.post('/', [
     }
 
     // Create category
-    const category = new Category({
+    const categoryData = {
       name,
       description,
       color,
       icon,
       sortOrder,
       parentCategory,
+      isActive,
       metaTitle,
-      metaDescription
-    });
+      metaDescription,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    };
 
-    await category.save();
+    const category = await Category.create(categoryData);
 
     res.status(201).json({
       message: 'Category created successfully',
@@ -108,11 +115,6 @@ router.post('/', [
     });
   } catch (error) {
     console.error('Create category error:', error);
-    if (error.code === 11000) {
-      return res.status(400).json({ 
-        message: 'Category with this name already exists' 
-      });
-    }
     res.status(500).json({ 
       message: 'Server error' 
     });
@@ -130,7 +132,7 @@ router.put('/:id', [
   body('color').optional().matches(/^#[0-9A-F]{6}$/i),
   body('icon').optional().isString(),
   body('sortOrder').optional().isInt({ min: 0 }),
-  body('parentCategory').optional().isMongoId(),
+  body('parentCategory').optional().isString(),
   body('isActive').optional().isBoolean()
 ], async (req, res) => {
   try {
@@ -172,7 +174,7 @@ router.put('/:id', [
     }
 
     // Update category
-    Object.assign(category, {
+    const updateData = {
       name,
       description,
       color,
@@ -181,14 +183,16 @@ router.put('/:id', [
       parentCategory,
       isActive,
       metaTitle,
-      metaDescription
-    });
+      metaDescription,
+      updatedAt: new Date().toISOString(),
+      slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    };
 
-    await category.save();
+    const updatedCategory = await Category.update(req.params.id, updateData);
 
     res.json({
       message: 'Category updated successfully',
-      category
+      category: updatedCategory
     });
   } catch (error) {
     console.error('Update category error:', error);
@@ -214,8 +218,8 @@ router.delete('/:id', [
     }
 
     // Check if category has articles
-    const Article = require('../models/Article');
-    const articleCount = await Article.countDocuments({ category: category._id });
+    const articles = await Article.findAll();
+    const articleCount = articles.filter(article => article.category === category._id).length;
     
     if (articleCount > 0) {
       return res.status(400).json({ 
@@ -223,7 +227,7 @@ router.delete('/:id', [
       });
     }
 
-    await category.deleteOne();
+    await Category.delete(req.params.id);
 
     res.json({
       message: 'Category deleted successfully'
@@ -251,12 +255,17 @@ router.put('/:id/status', [
       });
     }
 
-    category.isActive = !category.isActive;
-    await category.save();
+    const newStatus = !category.isActive;
+    const updateData = {
+      isActive: newStatus,
+      updatedAt: new Date().toISOString()
+    };
+
+    const updatedCategory = await Category.update(req.params.id, updateData);
 
     res.json({
-      message: `Category ${category.isActive ? 'activated' : 'deactivated'} successfully`,
-      category
+      message: `Category ${newStatus ? 'activated' : 'deactivated'} successfully`,
+      category: updatedCategory
     });
   } catch (error) {
     console.error('Toggle category status error:', error);

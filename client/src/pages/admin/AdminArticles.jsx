@@ -128,16 +128,16 @@ const AdminArticles = () => {
   return (
     <>
       <Helmet>
-        <title>Manage Articles - Admin Dashboard</title>
+        <title>Manage News - UACP Admin</title>
       </Helmet>
 
       <div className="p-6">
         {/* Header */}
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-mocha-700 mb-2">Manage Articles</h1>
-            <p className="text-mocha-600">
-              {articlesData?.total || 0} articles total
+            <h1 className="text-3xl font-bold text-eternity-700 mb-2">Manage News</h1>
+            <p className="text-eternity-600">
+              {articlesData?.total || 0} news items total
             </p>
           </div>
           
@@ -146,39 +146,39 @@ const AdminArticles = () => {
             className="btn-primary flex items-center"
           >
             <FiPlus className="mr-2" />
-            New Article
+            New News
           </Link>
         </div>
 
         {/* Filters */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-cream-200 mb-6">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-sidecar-300 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div>
-              <label className="block text-sm font-medium text-mocha-700 mb-2">
-                Search Articles
+              <label className="block text-sm font-medium text-eternity-700 mb-2">
+                Search News
               </label>
               <div className="relative">
-                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mocha-400" />
+                <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-eternity-400" />
                 <input
                   type="text"
                   placeholder="Search by title..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-mocha-700 mb-2">
+              <label className="block text-sm font-medium text-eternity-700 mb-2">
                 Category
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
               >
                 <option value="">All Categories</option>
                 {categoriesData?.categories?.map((category) => (
@@ -191,13 +191,13 @@ const AdminArticles = () => {
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-mocha-700 mb-2">
+              <label className="block text-sm font-medium text-eternity-700 mb-2">
                 Status
               </label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
               >
                 <option value="">All Status</option>
                 <option value="published">Published</option>
@@ -208,7 +208,7 @@ const AdminArticles = () => {
 
             {/* Bulk Actions */}
             <div>
-              <label className="block text-sm font-medium text-mocha-700 mb-2">
+              <label className="block text-sm font-medium text-eternity-700 mb-2">
                 Bulk Actions
               </label>
               <button
@@ -222,57 +222,57 @@ const AdminArticles = () => {
           </div>
         </div>
 
-        {/* Articles Table */}
+        {/* News Table */}
         {isLoading ? (
           <LoadingSpinner />
         ) : (
-          <div className="bg-white rounded-lg shadow-sm border border-cream-200 overflow-hidden">
+          <div className="bg-white rounded-lg shadow-sm border border-sidecar-300 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-cream-50">
+                <thead className="bg-sidecar-50">
                   <tr>
                     <th className="px-6 py-3 text-left">
                       <input
                         type="checkbox"
                         checked={selectedArticles.length === articlesData?.data?.articles?.length && articlesData?.data?.articles?.length > 0}
                         onChange={handleSelectAll}
-                        className="rounded border-mocha-300 text-pink-600 focus:ring-pink-500"
+                        className="rounded border-sidecar-300 text-eternity-600 focus:ring-eternity-500"
                       />
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-mocha-500 uppercase tracking-wider">
-                      Article
+                    <th className="px-6 py-3 text-left text-xs font-medium text-eternity-500 uppercase tracking-wider">
+                      News Item
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-mocha-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-eternity-500 uppercase tracking-wider">
                       Category
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-mocha-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-eternity-500 uppercase tracking-wider">
                       Author
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-mocha-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-eternity-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-mocha-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-eternity-500 uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-mocha-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-eternity-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-cream-200">
+                <tbody className="bg-white divide-y divide-sidecar-300">
                   {articlesData?.data?.articles?.map((article) => (
                     <motion.tr
                       key={article._id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="hover:bg-cream-50"
+                      className="hover:bg-sidecar-50"
                     >
                       <td className="px-6 py-4">
                         <input
                           type="checkbox"
                           checked={selectedArticles.includes(article._id)}
                           onChange={() => handleSelectArticle(article._id)}
-                          className="rounded border-mocha-300 text-pink-600 focus:ring-pink-500"
+                          className="rounded border-sidecar-300 text-eternity-600 focus:ring-eternity-500"
                         />
                       </td>
                       <td className="px-6 py-4">
@@ -285,10 +285,10 @@ const AdminArticles = () => {
                             />
                           )}
                           <div>
-                            <div className="text-sm font-medium text-mocha-900">
+                            <div className="text-sm font-medium text-eternity-900">
                               {article.title}
                             </div>
-                            <div className="text-sm text-mocha-500">
+                            <div className="text-sm text-eternity-500">
                               {article.excerpt?.substring(0, 60)}...
                             </div>
                           </div>
@@ -296,18 +296,18 @@ const AdminArticles = () => {
                       </td>
                       <td className="px-6 py-4">
                         {article.category && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-alpine-100 text-alpine-800">
                             {article.category.name}
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-sm text-mocha-900">
+                      <td className="px-6 py-4 text-sm text-eternity-900">
                         {article.author?.name || 'Anonymous'}
                       </td>
                       <td className="px-6 py-4">
                         {getStatusBadge(article.status)}
                       </td>
-                      <td className="px-6 py-4 text-sm text-mocha-500">
+                      <td className="px-6 py-4 text-sm text-eternity-500">
                         {new Date(article.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4">
@@ -315,7 +315,7 @@ const AdminArticles = () => {
                           <Link
                             to={`/articles/${article.slug}`}
                             target="_blank"
-                            className="text-mocha-400 hover:text-mocha-600"
+                            className="text-eternity-400 hover:text-eternity-600"
                             title="View"
                           >
                             <FiEye />

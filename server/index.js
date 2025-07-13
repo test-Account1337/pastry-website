@@ -3,7 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
-const mongoose = require('mongoose');
+const { db } = require('./config/firebase');
 const path = require('path');
 require('dotenv').config();
 
@@ -56,13 +56,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/pastry-news', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ Connected to MongoDB'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+// Firebase connection
+console.log('✅ Connected to Firebase Firestore');
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -76,7 +71,7 @@ app.use('/api/upload', uploadRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
-    message: 'Pastry News API is running',
+    message: 'UACP News API is running',
     timestamp: new Date().toISOString()
   });
 });

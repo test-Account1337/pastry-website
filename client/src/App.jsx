@@ -26,6 +26,7 @@ import AdminArticleForm from './pages/admin/AdminArticleForm';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminProfile from './pages/admin/AdminProfile';
+import NotFoundPage from './pages/NotFoundPage';
 
 // Protected Route Component
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -53,7 +54,6 @@ function App() {
 
         {/* Admin Login Route (standalone, not wrapped in AdminLayout) */}
         <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminLogin />} />
 
         {/* Admin Protected Routes (wrapped in AdminLayout) */}
         <Route path="/admin" element={<AdminLayout />}>
@@ -95,20 +95,7 @@ function App() {
         </Route>
 
         {/* 404 Page */}
-        <Route path="*" element={
-          <Layout>
-            <div className="min-h-screen flex items-center justify-center">
-              <div className="text-center">
-                <h1 className="text-6xl font-bold text-mocha-500 mb-4">404</h1>
-                <h2 className="text-2xl font-semibold text-mocha-700 mb-4">Page Not Found</h2>
-                <p className="text-mocha-600 mb-8">The page you're looking for doesn't exist.</p>
-                <a href="/" className="btn-primary">
-                  Go Home
-                </a>
-              </div>
-            </div>
-          </Layout>
-        } />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </AuthProvider>
   );

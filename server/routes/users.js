@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
+const Article = require('../models/Article');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -10,8 +11,15 @@ const router = express.Router();
 // @access  Private (Admin)
 router.get('/', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const users = await User.find({}).select('-password').sort({ createdAt: -1 });
-    res.json({ users });
+    const users = await User.findAll();
+    // Remove passwords from response
+    const usersWithoutPassword = users.map(user => {
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    });
+    // Sort by creation date (newest first)
+    usersWithoutPassword.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    res.json({ users: usersWithoutPassword });
   } catch (error) {
     console.error('Get users error:', error);
     res.status(500).json({ 
@@ -25,13 +33,15 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
 // @access  Private (Admin)
 router.get('/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ 
         message: 'User not found' 
       });
     }
-    res.json({ user });
+    // Remove password from response
+    const { password, ...userWithoutPassword } = user;
+    res.json({ user: userWithoutPassword });
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({ 
@@ -71,19 +81,20 @@ router.put('/:id', [
     const { firstName, lastName, role, isActive, bio } = req.body;
 
     // Update user
-    Object.assign(user, {
+    const updateData = {
       firstName,
       lastName,
       role,
       isActive,
-      bio
-    });
+      bio,
+      updatedAt: new Date().toISOString()
+    };
 
-    await user.save();
+    const updatedUser = await User.update(req.params.id, updateData);
 
     res.json({
       message: 'User updated successfully',
-      user: user.toPublicJSON()
+      user: updatedUser
     });
   } catch (error) {
     console.error('Update user error:', error);
@@ -109,8 +120,8 @@ router.delete('/:id', [
     }
 
     // Check if user has articles
-    const Article = require('../models/Article');
-    const articleCount = await Article.countDocuments({ author: user._id });
+    const articles = await Article.findAll();
+    const articleCount = articles.filter(article => article.author === user._id).length;
     
     if (articleCount > 0) {
       return res.status(400).json({ 
@@ -118,7 +129,7 @@ router.delete('/:id', [
       });
     }
 
-    await user.deleteOne();
+    await User.delete(req.params.id);
 
     res.json({
       message: 'User deleted successfully'
@@ -148,7 +159,7 @@ router.put('/:id/avatar', [
     }
 
     // Check if user is updating their own avatar or is admin
-    if (req.params.id !== req.user._id.toString() && req.user.role !== 'admin') {
+    if (req.params.id !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ 
         message: 'You can only update your own avatar' 
       });
@@ -161,12 +172,16 @@ router.put('/:id/avatar', [
       });
     }
 
-    user.avatar = req.body.avatar;
-    await user.save();
+    const updateData = {
+      avatar: req.body.avatar,
+      updatedAt: new Date().toISOString()
+    };
+
+    const updatedUser = await User.update(req.params.id, updateData);
 
     res.json({
       message: 'Avatar updated successfully',
-      user: user.toPublicJSON()
+      user: updatedUser
     });
   } catch (error) {
     console.error('Update avatar error:', error);
@@ -181,17 +196,21 @@ router.put('/:id/avatar', [
 // @access  Private (Admin)
 router.get('/stats/overview', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments();
-    const activeUsers = await User.countDocuments({ isActive: true });
-    const adminUsers = await User.countDocuments({ role: 'admin' });
-    const editorUsers = await User.countDocuments({ role: 'editor' });
-    const authorUsers = await User.countDocuments({ role: 'author' });
+    const users = await User.findAll();
+    const totalUsers = users.length;
+    const activeUsers = users.filter(user => user.isActive).length;
+    const adminUsers = users.filter(user => user.role === 'admin').length;
+    const editorUsers = users.filter(user => user.role === 'editor').length;
+    const authorUsers = users.filter(user => user.role === 'author').length;
 
     // Get recent users
-    const recentUsers = await User.find({})
-      .select('firstName lastName email role isActive createdAt')
-      .sort({ createdAt: -1 })
-      .limit(5);
+    const recentUsers = users
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5)
+      .map(user => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
 
     res.json({
       stats: {

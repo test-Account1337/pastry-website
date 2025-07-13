@@ -28,10 +28,10 @@ const AdminLogin = () => {
   return (
     <>
       <Helmet>
-        <title>Admin Login - Pastry News</title>
+        <title>Admin Login - UACP</title>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-cream-100 via-pink-50 to-mocha-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-sidecar-100 via-alpine-50 to-eternity-100 flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -40,13 +40,17 @@ const AdminLogin = () => {
         >
           {/* Logo */}
           <div className="text-center mb-8">
-            <Link to="/" className="inline-flex items-center space-x-2">
-              <div className="text-4xl">🍰</div>
+            <Link to="/" className="inline-flex items-center space-x-3">
+              <img 
+                src="/images/uacp_logo.png" 
+                alt="UACP Logo" 
+                className="h-12 w-auto"
+              />
               <div>
                 <h1 className="text-2xl font-display font-bold gradient-text">
-                  Pastry News
+                  UACP
                 </h1>
-                <p className="text-sm text-mocha-600">Admin Portal</p>
+                <p className="text-sm text-eternity-600">Admin Portal</p>
               </div>
             </Link>
           </div>
@@ -54,10 +58,10 @@ const AdminLogin = () => {
           {/* Login Card */}
           <div className="card p-8">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-display font-bold text-mocha-700 mb-2">
+              <h2 className="text-2xl font-display font-bold text-eternity-700 mb-2">
                 Welcome Back
               </h2>
-              <p className="text-mocha-600">
+              <p className="text-eternity-600">
                 Sign in to access the admin dashboard
               </p>
             </div>
@@ -65,11 +69,11 @@ const AdminLogin = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Email Field */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-mocha-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-eternity-700 mb-2">
                   Email Address
                 </label>
                 <div className="relative">
-                  <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mocha-400 w-5 h-5" />
+                  <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-eternity-400 w-5 h-5" />
                   <input
                     type="email"
                     id="email"
@@ -85,11 +89,11 @@ const AdminLogin = () => {
 
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-mocha-700 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-eternity-700 mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mocha-400 w-5 h-5" />
+                  <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-eternity-400 w-5 h-5" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     id="password"
@@ -103,7 +107,7 @@ const AdminLogin = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-mocha-400 hover:text-mocha-600 transition-colors duration-200"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-eternity-400 hover:text-eternity-600 transition-colors duration-200"
                   >
                     {showPassword ? <FiEyeOff className="w-5 h-5" /> : <FiEye className="w-5 h-5" />}
                   </button>
@@ -129,10 +133,10 @@ const AdminLogin = () => {
 
             {/* Footer */}
             <div className="mt-8 text-center">
-              <p className="text-sm text-mocha-500">
+              <p className="text-sm text-eternity-500">
                 Need help? Contact{' '}
-                <a href="mailto:support@pastrynews.com" className="text-mocha-600 hover:text-mocha-800 font-medium">
-                  support@pastrynews.com
+                <a href="mailto:support@uacp.org" className="text-eternity-600 hover:text-eternity-800 font-medium">
+                  support@uacp.org
                 </a>
               </p>
             </div>
@@ -142,9 +146,9 @@ const AdminLogin = () => {
           <div className="text-center mt-6">
             <Link
               to="/"
-              className="text-mocha-600 hover:text-mocha-800 font-medium transition-colors duration-200"
+              className="text-eternity-600 hover:text-eternity-800 font-medium transition-colors duration-200"
             >
-              ← Back to Pastry News
+              ← Back to UACP
             </Link>
           </div>
         </motion.div>

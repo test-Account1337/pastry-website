@@ -48,11 +48,11 @@ const ArticleCard = ({ article, featured = false, className = '' }) => {
           </div>
         </div>
         <div className="p-6">
-          <p className="text-mocha-600 mb-4 line-clamp-3">
+          <p className="text-eternity-600 mb-4 line-clamp-3">
             {article.excerpt}
           </p>
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4 text-sm text-mocha-500">
+            <div className="flex items-center space-x-4 text-sm text-eternity-500">
               <div className="flex items-center space-x-1">
                 <FiEye className="w-4 h-4" />
                 <span>{article.viewCount || 0}</span>
@@ -64,7 +64,7 @@ const ArticleCard = ({ article, featured = false, className = '' }) => {
             </div>
             <Link
               to={`/articles/${article.slug}`}
-              className="text-mocha-600 hover:text-mocha-800 font-medium transition-colors duration-200"
+              className="text-eternity-600 hover:text-eternity-800 font-medium transition-colors duration-200"
             >
               Read More →
             </Link>
@@ -100,17 +100,17 @@ const ArticleCard = ({ article, featured = false, className = '' }) => {
       </div>
       
       <div className="p-6">
-        <h3 className="text-lg font-display font-bold text-mocha-700 mb-3 line-clamp-2 hover:text-mocha-800 transition-colors duration-200">
+        <h3 className="text-lg font-display font-bold text-eternity-700 mb-3 line-clamp-2 hover:text-eternity-800 transition-colors duration-200">
           <Link to={`/articles/${article.slug}`}>
             {article.title}
           </Link>
         </h3>
         
-        <p className="text-mocha-600 mb-4 line-clamp-3">
+        <p className="text-eternity-600 mb-4 line-clamp-3">
           {truncateText(article.excerpt)}
         </p>
         
-        <div className="flex items-center justify-between text-sm text-mocha-500 mb-4">
+        <div className="flex items-center justify-between text-sm text-eternity-500 mb-4">
           <div className="flex items-center space-x-1">
             <FiUser className="w-4 h-4" />
             <span>{article.author?.firstName} {article.author?.lastName}</span>
@@ -122,7 +122,7 @@ const ArticleCard = ({ article, featured = false, className = '' }) => {
         </div>
         
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4 text-sm text-mocha-500">
+          <div className="flex items-center space-x-4 text-sm text-eternity-500">
             <div className="flex items-center space-x-1">
               <FiEye className="w-4 h-4" />
               <span>{article.viewCount || 0}</span>
@@ -134,7 +134,7 @@ const ArticleCard = ({ article, featured = false, className = '' }) => {
           </div>
           <Link
             to={`/articles/${article.slug}`}
-            className="text-mocha-600 hover:text-mocha-800 font-medium transition-colors duration-200"
+            className="text-eternity-600 hover:text-eternity-800 font-medium transition-colors duration-200"
           >
             Read More →
           </Link>

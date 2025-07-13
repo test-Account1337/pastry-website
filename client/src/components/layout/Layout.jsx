@@ -6,7 +6,7 @@ import NewsletterSignup from '../common/NewsletterSignup';
 
 const Layout = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-cream-100">
+    <div className="min-h-screen flex flex-col bg-eternity-50">
       <Header />
       
       <main className="flex-grow">

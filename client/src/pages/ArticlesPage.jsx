@@ -98,13 +98,13 @@ const ArticlesPage = () => {
   return (
     <>
       <Helmet>
-        <title>Articles - Pastry News</title>
-        <meta name="description" content="Browse all articles about pastry chefs, techniques, trends, and industry news. Find the latest insights from the world of pastry arts." />
+        <title>News - UACP</title>
+        <meta name="description" content="Browse all news about African chefs, culinary events, industry updates, and UACP activities. Find the latest insights from the African culinary world." />
       </Helmet>
 
       <div className="bg-white">
         {/* Page Header */}
-        <section className="bg-gradient-to-tl from-mocha-900 via-mocha-800 to-mocha-700 text-black py-16">
+        <section className="bg-gradient-to-tl from-eternity-900 via-eternity-800 to-eternity-700 text-white py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -113,17 +113,17 @@ const ArticlesPage = () => {
               className="text-center"
             >
               <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-                All Articles
+                Latest News
               </h1>
-              <p className="text-xl text-black/90 max-w-2xl mx-auto">
-                Discover the latest stories, techniques, and insights from the pastry world
+              <p className="text-xl text-white/90 max-w-2xl mx-auto">
+                Stay updated with the latest news, events, and insights from the African culinary world
               </p>
             </motion.div>
           </div>
         </section>
 
         {/* Search and Filters */}
-        <section className="py-8 bg-cream-50 border-b border-cream-200">
+        <section className="py-8 bg-eternity-50 border-b border-sidecar-300">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
               {/* Search Bar */}
@@ -132,10 +132,10 @@ const ArticlesPage = () => {
                   <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mocha-400" />
                   <input
                     type="text"
-                    placeholder="Search articles..."
+                    placeholder="Search news..."
                     value={currentSearch}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
                   />
                 </div>
               </div>
@@ -144,18 +144,18 @@ const ArticlesPage = () => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center px-4 py-2 bg-white border border-mocha-200 rounded-lg hover:bg-mocha-50 transition-colors"
+                  className="flex items-center px-4 py-2 bg-white border border-sidecar-300 rounded-lg hover:bg-sidecar-100 transition-colors"
                 >
                   <FiFilter className="mr-2" />
                   Filters
                 </button>
 
                 {/* View Mode Toggle */}
-                <div className="flex bg-white border border-mocha-200 rounded-lg p-1">
+                <div className="flex bg-white border border-sidecar-300 rounded-lg p-1">
                   <button
                     onClick={() => setViewMode('grid')}
                     className={`p-2 rounded ${
-                      viewMode === 'grid' ? 'bg-pink-100 text-pink-700' : 'text-mocha-500 hover:text-mocha-700'
+                      viewMode === 'grid' ? 'bg-alpine-100 text-alpine-700' : 'text-eternity-500 hover:text-eternity-700'
                     }`}
                   >
                     <FiGrid />
@@ -163,7 +163,7 @@ const ArticlesPage = () => {
                   <button
                     onClick={() => setViewMode('list')}
                     className={`p-2 rounded ${
-                      viewMode === 'list' ? 'bg-pink-100 text-pink-700' : 'text-mocha-500 hover:text-mocha-700'
+                      viewMode === 'list' ? 'bg-alpine-100 text-alpine-700' : 'text-eternity-500 hover:text-eternity-700'
                     }`}
                   >
                     <FiList />
@@ -178,22 +178,22 @@ const ArticlesPage = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-6 p-6 bg-white rounded-lg border border-mocha-200"
+                className="mt-6 p-6 bg-white rounded-lg border border-sidecar-300"
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {/* Category Filter */}
                   <div>
-                    <label className="block text-sm font-medium text-mocha-700 mb-2">
+                    <label className="block text-sm font-medium text-eternity-700 mb-2">
                       Category
                     </label>
                     <select
                       value={currentCategory}
                       onChange={(e) => handleCategoryFilter(e.target.value)}
-                      className="w-full px-3 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
                     >
                       <option value="">All Categories</option>
                       {categoriesData?.categories?.map((category) => (
-                        <option key={category._id} value={category._id}>
+                        <option key={`category-${category._id}`} value={category._id}>
                           {category.name}
                         </option>
                       ))}
@@ -202,13 +202,13 @@ const ArticlesPage = () => {
 
                   {/* Sort Filter */}
                   <div>
-                    <label className="block text-sm font-medium text-mocha-700 mb-2">
+                    <label className="block text-sm font-medium text-eternity-700 mb-2">
                       Sort By
                     </label>
                     <select
                       value={currentSort}
                       onChange={(e) => handleSortChange(e.target.value)}
-                      className="w-full px-3 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
                     >
                       <option value="latest">Latest First</option>
                       <option value="oldest">Oldest First</option>
@@ -219,13 +219,13 @@ const ArticlesPage = () => {
 
                   {/* Results Per Page */}
                   <div>
-                    <label className="block text-sm font-medium text-mocha-700 mb-2">
+                    <label className="block text-sm font-medium text-eternity-700 mb-2">
                       Results Per Page
                     </label>
                     <select
                       value={currentLimit}
                       onChange={(e) => updateFilters({ limit: e.target.value })}
-                      className="w-full px-3 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
                     >
                       <option value={6}>6</option>
                       <option value={12}>12</option>
@@ -243,9 +243,9 @@ const ArticlesPage = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Results Summary */}
             <div className="flex justify-between items-center mb-8">
-              <p className="text-mocha-600">
+              <p className="text-eternity-600">
                 Showing {((currentPage - 1) * currentLimit) + 1} to{' '}
-                {Math.min(currentPage * currentLimit, totalArticles)} of {totalArticles} articles
+                {Math.min(currentPage * currentLimit, totalArticles)} of {totalArticles} news items
               </p>
             </div>
 
@@ -253,7 +253,7 @@ const ArticlesPage = () => {
               <LoadingSpinner />
             ) : articlesData?.data?.articles?.length > 0 ? (
               <>
-                {/* Articles Grid/List */}
+                {/* News Grid/List */}
                 <div
                   className={`grid gap-8 ${
                     viewMode === 'grid'
@@ -261,9 +261,9 @@ const ArticlesPage = () => {
                       : 'grid-cols-1'
                   }`}
                 >
-                  {articlesData.data.articles.map((article) => (
+                  {articlesData.data.articles.map((article, index) => (
                     <motion.div
-                      key={article._id}
+                      key={`article-${article._id}-${index}`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5 }}
@@ -283,7 +283,7 @@ const ArticlesPage = () => {
                       <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="flex items-center px-3 py-2 text-sm border border-mocha-200 rounded-lg hover:bg-mocha-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center px-3 py-2 text-sm border border-sidecar-300 rounded-lg hover:bg-sidecar-100 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <FiChevronLeft className="mr-1" />
                         Previous
@@ -291,12 +291,12 @@ const ArticlesPage = () => {
 
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                         <button
-                          key={page}
+                          key={`page-${page}`}
                           onClick={() => handlePageChange(page)}
                           className={`px-3 py-2 text-sm border rounded-lg ${
                             page === currentPage
-                              ? 'bg-pink-500 text-white border-pink-500'
-                              : 'border-mocha-200 text-mocha-600 hover:bg-mocha-50'
+                              ? 'bg-eternity-600 text-white border-eternity-600'
+                              : 'border-sidecar-300 text-eternity-600 hover:bg-sidecar-100'
                           }`}
                         >
                           {page}
@@ -306,7 +306,7 @@ const ArticlesPage = () => {
                       <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="flex items-center px-3 py-2 text-sm border border-mocha-200 rounded-lg hover:bg-mocha-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center px-3 py-2 text-sm border border-sidecar-300 rounded-lg hover:bg-sidecar-100 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Next
                         <FiChevronRight className="ml-1" />
@@ -317,14 +317,14 @@ const ArticlesPage = () => {
               </>
             ) : (
               <div className="text-center py-16">
-                <div className="text-6xl mb-4">🍰</div>
-                <h3 className="text-2xl font-semibold text-mocha-700 mb-2">
-                  No articles found
+                <div className="text-6xl mb-4">📰</div>
+                <h3 className="text-2xl font-semibold text-eternity-700 mb-2">
+                  No news found
                 </h3>
-                <p className="text-mocha-600 mb-6">
+                <p className="text-eternity-600 mb-6">
                   {currentSearch || currentCategory
                     ? 'Try adjusting your search criteria or filters.'
-                    : 'Check back soon for new articles!'}
+                    : 'Check back soon for new news!'}
                 </p>
                 {(currentSearch || currentCategory) && (
                   <button

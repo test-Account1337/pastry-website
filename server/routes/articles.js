@@ -2,6 +2,7 @@ const express = require('express');
 const { body, validationResult, query } = require('express-validator');
 const Article = require('../models/Article');
 const Category = require('../models/Category');
+const User = require('../models/User');
 const { 
   authenticateToken, 
   requireAdminOrEditorOrAuthor, 
@@ -18,13 +19,8 @@ router.get('/', [
   optionalAuth,
   query('page').optional().isInt({ min: 1 }).toInt(),
   query('limit').optional().isInt({ min: 1, max: 50 }).toInt(),
-  query('category').optional().custom((value) => {
-    if (value === '' || value === null || value === undefined) {
-      return true; // Allow empty values
-    }
-    return require('mongoose').Types.ObjectId.isValid(value);
-  }),
-  query('author').optional().isMongoId(),
+  query('category').optional().isString(),
+  query('author').optional().isString(),
   query('tag').optional().isString(),
   query('search').optional().isString(),
   query('sort').optional().isIn(['newest', 'latest', 'oldest', 'popular', 'featured', 'title']),
@@ -50,62 +46,99 @@ router.get('/', [
       status
     } = req.query;
 
-    // Build query
-    let query = {};
-    
-    // If not admin, only show published articles
+    // Get all articles from Firebase
+    let articles = await Article.findAll();
+
+    // Filter articles based on query parameters
     if (!req.user || !['admin', 'editor'].includes(req.user.role)) {
-      query.status = 'published';
-      query.publishedAt = { $lte: new Date() };
+      articles = articles.filter(article => 
+        article.status === 'published' && 
+        new Date(article.publishedAt) <= new Date()
+      );
     } else if (status) {
-      query.status = status;
+      articles = articles.filter(article => article.status === status);
     }
 
-    if (category) query.category = category;
-    if (author) query.author = author;
-    if (tag) query.tags = { $in: [tag.toLowerCase()] };
+    if (category) {
+      articles = articles.filter(article => article.category === category);
+    }
+
+    if (author) {
+      articles = articles.filter(article => article.author === author);
+    }
+
+    if (tag) {
+      articles = articles.filter(article => 
+        article.tags && article.tags.includes(tag.toLowerCase())
+      );
+    }
 
     // Search functionality
     if (search && search.trim()) {
-      query.$text = { $search: search };
+      const searchTerm = search.toLowerCase();
+      articles = articles.filter(article =>
+        article.title.toLowerCase().includes(searchTerm) ||
+        article.excerpt.toLowerCase().includes(searchTerm) ||
+        article.content.toLowerCase().includes(searchTerm)
+      );
     }
 
-    // Build sort object
-    let sortObj = {};
+    // Sort articles
     switch (sort) {
       case 'oldest':
-        sortObj = { publishedAt: 1 };
+        articles.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
         break;
       case 'popular':
-        sortObj = { viewCount: -1 };
+        articles.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
         break;
       case 'featured':
-        sortObj = { isFeatured: -1, publishedAt: -1 };
+        articles.sort((a, b) => {
+          if (a.isFeatured && !b.isFeatured) return -1;
+          if (!a.isFeatured && b.isFeatured) return 1;
+          return new Date(b.publishedAt) - new Date(a.publishedAt);
+        });
         break;
       case 'title':
-        sortObj = { title: 1 };
+        articles.sort((a, b) => a.title.localeCompare(b.title));
         break;
       case 'latest':
       case 'newest':
       default:
-        sortObj = { publishedAt: -1 };
+        articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
     }
 
-    // Execute query
-    const skip = (page - 1) * limit;
-    
-    const articles = await Article.find(query)
-      .populate('author', 'firstName lastName avatar')
-      .populate('category', 'name slug color')
-      .sort(sortObj)
-      .skip(skip)
-      .limit(parseInt(limit));
-
-    const total = await Article.countDocuments(query);
+    // Pagination
+    const total = articles.length;
     const totalPages = Math.ceil(total / limit);
+    const skip = (page - 1) * limit;
+    const paginatedArticles = articles.slice(skip, skip + parseInt(limit));
+
+    // Populate author and category data
+    const populatedArticles = await Promise.all(
+      paginatedArticles.map(async (article) => {
+        const authorData = await User.findById(article.author);
+        const categoryData = await Category.findById(article.category);
+        
+        return {
+          ...article,
+          author: authorData ? {
+            _id: authorData._id,
+            firstName: authorData.firstName,
+            lastName: authorData.lastName,
+            avatar: authorData.avatar
+          } : null,
+          category: categoryData ? {
+            _id: categoryData._id,
+            name: categoryData.name,
+            slug: categoryData.slug,
+            color: categoryData.color
+          } : null
+        };
+      })
+    );
 
     res.json({
-      articles,
+      articles: populatedArticles,
       pagination: {
         currentPage: parseInt(page),
         totalPages,
@@ -142,14 +175,12 @@ router.get('/featured', async (req, res) => {
 // @access  Public
 router.get('/:slug', async (req, res) => {
   try {
-    const article = await Article.findOne({ 
-      slug: req.params.slug,
-      status: 'published',
-      publishedAt: { $lte: new Date() }
-    })
-    .populate('author', 'firstName lastName avatar bio')
-    .populate('category', 'name slug color')
-    .populate('relatedArticles', 'title slug excerpt featuredImage');
+    const articles = await Article.findAll();
+    const article = articles.find(a => 
+      a.slug === req.params.slug &&
+      a.status === 'published' &&
+      new Date(a.publishedAt) <= new Date()
+    );
 
     if (!article) {
       return res.status(404).json({ 
@@ -158,9 +189,30 @@ router.get('/:slug', async (req, res) => {
     }
 
     // Increment view count
-    await article.incrementViews();
+    await Article.incrementViews(article._id);
 
-    res.json({ article });
+    // Populate author and category data
+    const authorData = await User.findById(article.author);
+    const categoryData = await Category.findById(article.category);
+
+    const populatedArticle = {
+      ...article,
+      author: authorData ? {
+        _id: authorData._id,
+        firstName: authorData.firstName,
+        lastName: authorData.lastName,
+        avatar: authorData.avatar,
+        bio: authorData.bio
+      } : null,
+      category: categoryData ? {
+        _id: categoryData._id,
+        name: categoryData.name,
+        slug: categoryData.slug,
+        color: categoryData.color
+      } : null
+    };
+
+    res.json({ article: populatedArticle });
   } catch (error) {
     console.error('Get article error:', error);
     res.status(500).json({ 
@@ -178,7 +230,7 @@ router.post('/', [
   body('title', 'Title is required').notEmpty(),
   body('excerpt', 'Excerpt is required').notEmpty(),
   body('content', 'Content is required').notEmpty(),
-  body('category', 'Category is required').isMongoId(),
+  body('category', 'Category is required').isString(),
   body('featuredImage', 'Featured image is required').notEmpty(),
   body('tags').optional().isArray(),
   body('status').optional().isIn(['draft', 'published']),
@@ -218,7 +270,7 @@ router.post('/', [
     }
 
     // Create article
-    const article = new Article({
+    const articleData = {
       title,
       excerpt,
       content,
@@ -231,26 +283,42 @@ router.post('/', [
       metaTitle,
       metaDescription,
       seoKeywords,
-      author: req.user._id
-    });
+      author: req.user.id,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      viewCount: 0,
+      likes: 0,
+      slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    };
 
-    await article.save();
+    const article = await Article.create(articleData);
 
     // Populate author and category for response
-    await article.populate('author', 'firstName lastName avatar');
-    await article.populate('category', 'name slug color');
+    const authorData = await User.findById(article.author);
+    const categoryData = await Category.findById(article.category);
+
+    const populatedArticle = {
+      ...article,
+      author: authorData ? {
+        _id: authorData._id,
+        firstName: authorData.firstName,
+        lastName: authorData.lastName,
+        avatar: authorData.avatar
+      } : null,
+      category: categoryData ? {
+        _id: categoryData._id,
+        name: categoryData.name,
+        slug: categoryData.slug,
+        color: categoryData.color
+      } : null
+    };
 
     res.status(201).json({
       message: 'Article created successfully',
-      article
+      article: populatedArticle
     });
   } catch (error) {
     console.error('Create article error:', error);
-    if (error.code === 11000) {
-      return res.status(400).json({ 
-        message: 'Article with this title already exists' 
-      });
-    }
     res.status(500).json({ 
       message: 'Server error' 
     });
@@ -266,7 +334,7 @@ router.put('/:id', [
   body('title', 'Title is required').notEmpty(),
   body('excerpt', 'Excerpt is required').notEmpty(),
   body('content', 'Content is required').notEmpty(),
-  body('category', 'Category is required').isMongoId(),
+  body('category', 'Category is required').isString(),
   body('featuredImage', 'Featured image is required').notEmpty(),
   body('tags').optional().isArray(),
   body('status').optional().isIn(['draft', 'published', 'archived']),
@@ -313,7 +381,7 @@ router.put('/:id', [
     }
 
     // Update article
-    Object.assign(article, {
+    const updateData = {
       title,
       excerpt,
       content,
@@ -325,18 +393,36 @@ router.put('/:id', [
       allowComments,
       metaTitle,
       metaDescription,
-      seoKeywords
-    });
+      seoKeywords,
+      updatedAt: new Date().toISOString(),
+      slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    };
 
-    await article.save();
+    const updatedArticle = await Article.update(req.params.id, updateData);
 
     // Populate author and category for response
-    await article.populate('author', 'firstName lastName avatar');
-    await article.populate('category', 'name slug color');
+    const authorData = await User.findById(updatedArticle.author);
+    const categoryData = await Category.findById(updatedArticle.category);
+
+    const populatedArticle = {
+      ...updatedArticle,
+      author: authorData ? {
+        _id: authorData._id,
+        firstName: authorData.firstName,
+        lastName: authorData.lastName,
+        avatar: authorData.avatar
+      } : null,
+      category: categoryData ? {
+        _id: categoryData._id,
+        name: categoryData.name,
+        slug: categoryData.slug,
+        color: categoryData.color
+      } : null
+    };
 
     res.json({
       message: 'Article updated successfully',
-      article
+      article: populatedArticle
     });
   } catch (error) {
     console.error('Update article error:', error);
@@ -361,7 +447,7 @@ router.delete('/:id', [
       });
     }
 
-    await article.deleteOne();
+    await Article.delete(req.params.id);
 
     res.json({
       message: 'Article deleted successfully'
@@ -379,11 +465,12 @@ router.delete('/:id', [
 // @access  Public
 router.post('/:id/like', async (req, res) => {
   try {
-    const article = await Article.findOne({ 
-      _id: req.params.id,
-      status: 'published',
-      publishedAt: { $lte: new Date() }
-    });
+    const articles = await Article.findAll();
+    const article = articles.find(a => 
+      a._id === req.params.id &&
+      a.status === 'published' &&
+      new Date(a.publishedAt) <= new Date()
+    );
 
     if (!article) {
       return res.status(404).json({ 
@@ -391,11 +478,11 @@ router.post('/:id/like', async (req, res) => {
       });
     }
 
-    await article.incrementLikes();
+    await Article.incrementLikes(req.params.id);
 
     res.json({
       message: 'Article liked successfully',
-      likes: article.likes
+      likes: (article.likes || 0) + 1
     });
   } catch (error) {
     console.error('Like article error:', error);
@@ -422,14 +509,19 @@ router.get('/search/suggestions', [
 
     const { q } = req.query;
     
-    const suggestions = await Article.find({
-      $text: { $search: q },
-      status: 'published',
-      publishedAt: { $lte: new Date() }
-    })
-    .select('title slug')
-    .limit(5)
-    .sort({ score: { $meta: 'textScore' } });
+    const articles = await Article.findAll();
+    const suggestions = articles
+      .filter(article => 
+        article.status === 'published' &&
+        new Date(article.publishedAt) <= new Date() &&
+        (article.title.toLowerCase().includes(q.toLowerCase()) ||
+         article.excerpt.toLowerCase().includes(q.toLowerCase()))
+      )
+      .slice(0, 5)
+      .map(article => ({
+        title: article.title,
+        slug: article.slug
+      }));
 
     res.json({ suggestions });
   } catch (error) {

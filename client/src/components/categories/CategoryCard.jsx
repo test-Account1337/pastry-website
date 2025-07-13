@@ -11,17 +11,17 @@ const CategoryCard = ({ category, className = '' }) => {
       <Link to={`/category/${category.slug}`} className="block p-6">
         <div className="text-4xl mb-4">{category.icon}</div>
         
-        <h3 className="text-lg font-display font-bold text-mocha-700 mb-2">
+        <h3 className="text-lg font-display font-bold text-eternity-700 mb-2">
           {category.name}
         </h3>
         
         {category.description && (
-          <p className="text-sm text-mocha-600 mb-4 line-clamp-2">
+          <p className="text-sm text-eternity-600 mb-4 line-clamp-2">
             {category.description}
           </p>
         )}
         
-        <div className="flex items-center justify-center space-x-2 text-sm text-mocha-500">
+        <div className="flex items-center justify-center space-x-2 text-sm text-eternity-500">
           <span>{category.articleCount || 0}</span>
           <span>articles</span>
         </div>

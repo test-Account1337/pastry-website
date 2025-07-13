@@ -123,15 +123,15 @@ const AdminCategories = () => {
   return (
     <>
       <Helmet>
-        <title>Manage Categories - Admin Dashboard</title>
+        <title>Manage Categories - UACP Admin</title>
       </Helmet>
 
       <div className="p-6">
         {/* Header */}
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-mocha-700 mb-2">Manage Categories</h1>
-            <p className="text-mocha-600">
+            <h1 className="text-3xl font-bold text-eternity-700 mb-2">Manage Categories</h1>
+            <p className="text-eternity-600">
               {categoriesData?.categories?.length || 0} categories total
             </p>
           </div>
@@ -151,32 +151,32 @@ const AdminCategories = () => {
             {isLoading ? (
               <LoadingSpinner />
             ) : (
-              <div className="bg-white rounded-lg shadow-sm border border-cream-200 overflow-hidden">
+              <div className="bg-white rounded-lg shadow-sm border border-sidecar-300 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-cream-50">
+                    <thead className="bg-sidecar-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-mocha-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-eternity-500 uppercase tracking-wider">
                           Category
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-mocha-500 uppercase tracking-wider">
-                          Articles
+                        <th className="px-6 py-3 text-left text-xs font-medium text-eternity-500 uppercase tracking-wider">
+                          News Items
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-mocha-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-eternity-500 uppercase tracking-wider">
                           Slug
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-mocha-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-eternity-500 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-cream-200">
+                    <tbody className="bg-white divide-y divide-sidecar-300">
                       {categoriesData?.categories?.map((category) => (
                         <motion.tr
                           key={category._id}
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          className="hover:bg-cream-50"
+                          className="hover:bg-sidecar-50"
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center">
@@ -185,11 +185,11 @@ const AdminCategories = () => {
                                 style={{ backgroundColor: category.color || '#F8BBD9' }}
                               ></div>
                               <div>
-                                <div className="text-sm font-medium text-mocha-900">
+                                <div className="text-sm font-medium text-eternity-900">
                                   {category.name}
                                 </div>
                                 {category.description && (
-                                  <div className="text-sm text-mocha-500">
+                                  <div className="text-sm text-eternity-500">
                                     {category.description}
                                   </div>
                                 )}
@@ -197,13 +197,13 @@ const AdminCategories = () => {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center text-sm text-mocha-900">
+                            <div className="flex items-center text-sm text-eternity-900">
                               <FiFileText className="mr-1" />
-                              {category.articleCount || 0} articles
+                                                              {category.articleCount || 0} news items
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <code className="text-sm bg-mocha-100 px-2 py-1 rounded">
+                            <code className="text-sm bg-sidecar-100 px-2 py-1 rounded">
                               {category.slug}
                             </code>
                           </td>
@@ -240,15 +240,15 @@ const AdminCategories = () => {
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="bg-white rounded-lg shadow-sm border border-cream-200 p-6 sticky top-6"
+                className="bg-white rounded-lg shadow-sm border border-sidecar-300 p-6 sticky top-6"
               >
-                <h3 className="text-lg font-semibold text-mocha-700 mb-4">
+                <h3 className="text-lg font-semibold text-eternity-700 mb-4">
                   {editingCategory ? 'Edit Category' : 'New Category'}
                 </h3>
                 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-mocha-700 mb-2">
+                    <label className="block text-sm font-medium text-eternity-700 mb-2">
                       Category Name *
                     </label>
                     <input
@@ -257,13 +257,13 @@ const AdminCategories = () => {
                       value={formData.name}
                       onChange={handleInputChange}
                       placeholder="Enter category name..."
-                      className="w-full px-3 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-mocha-700 mb-2">
+                    <label className="block text-sm font-medium text-eternity-700 mb-2">
                       Description
                     </label>
                     <textarea
@@ -272,12 +272,12 @@ const AdminCategories = () => {
                       onChange={handleInputChange}
                       rows={3}
                       placeholder="Brief description of the category..."
-                      className="w-full px-3 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-vertical"
+                      className="w-full px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent resize-vertical"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-mocha-700 mb-2">
+                    <label className="block text-sm font-medium text-eternity-700 mb-2">
                       Slug
                     </label>
                     <input
@@ -286,15 +286,15 @@ const AdminCategories = () => {
                       value={formData.slug}
                       onChange={handleInputChange}
                       placeholder="category-slug"
-                      className="w-full px-3 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
                     />
-                    <p className="text-xs text-mocha-500 mt-1">
+                    <p className="text-xs text-eternity-500 mt-1">
                       URL-friendly version of the name
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-mocha-700 mb-2">
+                    <label className="block text-sm font-medium text-eternity-700 mb-2">
                       Color
                     </label>
                     <div className="flex items-center space-x-3">
@@ -303,13 +303,13 @@ const AdminCategories = () => {
                         name="color"
                         value={formData.color}
                         onChange={handleInputChange}
-                        className="w-12 h-10 border border-mocha-200 rounded-lg cursor-pointer"
+                        className="w-12 h-10 border border-sidecar-300 rounded-lg cursor-pointer"
                       />
                       <input
                         type="text"
                         value={formData.color}
                         onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                        className="flex-1 px-3 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                        className="flex-1 px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
                         placeholder="#F8BBD9"
                       />
                     </div>
@@ -341,27 +341,27 @@ const AdminCategories = () => {
 
             {/* Quick Stats */}
             {!showForm && (
-              <div className="bg-white rounded-lg shadow-sm border border-cream-200 p-6">
-                <h3 className="text-lg font-semibold text-mocha-700 mb-4">Quick Stats</h3>
+              <div className="bg-white rounded-lg shadow-sm border border-sidecar-300 p-6">
+                <h3 className="text-lg font-semibold text-eternity-700 mb-4">Quick Stats</h3>
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-mocha-600">Total Categories</span>
-                    <span className="font-semibold text-mocha-700">
+                    <span className="text-eternity-600">Total Categories</span>
+                    <span className="font-semibold text-eternity-700">
                       {categoriesData?.categories?.length || 0}
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-mocha-600">Total Articles</span>
-                    <span className="font-semibold text-mocha-700">
+                    <span className="text-eternity-600">Total News Items</span>
+                    <span className="font-semibold text-eternity-700">
                       {categoriesData?.categories?.reduce((sum, cat) => sum + (cat.articleCount || 0), 0) || 0}
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-between">
-                    <span className="text-mocha-600">Most Popular</span>
-                    <span className="font-semibold text-mocha-700">
+                    <span className="text-eternity-600">Most Popular</span>
+                    <span className="font-semibold text-eternity-700">
                       {categoriesData?.categories?.reduce((max, cat) => 
                         (cat.articleCount || 0) > (max?.articleCount || 0) ? cat : max
                       )?.name || 'N/A'}

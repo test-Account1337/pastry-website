@@ -14,7 +14,7 @@ const authenticateToken = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId).select('-password');
+    const user = await User.findById(decoded.userId);
 
     if (!user) {
       return res.status(401).json({ 
@@ -92,7 +92,7 @@ const requireOwnershipOrAdmin = (resourceField = 'author') => {
 
     // Check if user owns the resource
     const resourceId = req.params.id || req.body[resourceField];
-    if (resourceId && resourceId.toString() === req.user._id.toString()) {
+    if (resourceId && resourceId.toString() === req.user.id.toString()) {
       return next();
     }
 
@@ -110,7 +110,7 @@ const optionalAuth = async (req, res, next) => {
 
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findById(decoded.userId).select('-password');
+      const user = await User.findById(decoded.userId);
       
       if (user && user.isActive) {
         req.user = user;

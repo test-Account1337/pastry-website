@@ -1,135 +1,224 @@
-const mongoose = require('mongoose');
+const { db } = require('../config/firebase');
 
-const categorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Category name is required'],
-    trim: true,
-    maxlength: [50, 'Category name cannot exceed 50 characters']
-  },
-  slug: {
-    type: String,
-    required: [true, 'Category slug is required'],
-    unique: true,
-    lowercase: true,
-    trim: true
-  },
-  description: {
-    type: String,
-    maxlength: [300, 'Description cannot exceed 300 characters']
-  },
-  color: {
-    type: String,
-    default: '#8D6E63', // Default mocha brown
-    match: [/^#[0-9A-F]{6}$/i, 'Color must be a valid hex color']
-  },
-  icon: {
-    type: String,
-    default: '🍰'
-  },
-  image: {
-    type: String,
-    default: null
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
-  sortOrder: {
-    type: Number,
-    default: 0
-  },
-  metaTitle: {
-    type: String,
-    maxlength: [60, 'Meta title cannot exceed 60 characters']
-  },
-  metaDescription: {
-    type: String,
-    maxlength: [160, 'Meta description cannot exceed 160 characters']
-  },
-  parentCategory: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    default: null
-  },
-  articleCount: {
-    type: Number,
-    default: 0
+class Category {
+  constructor(data = {}) {
+    this.id = data.id || null;
+    this.name = data.name || '';
+    this.slug = data.slug || '';
+    this.description = data.description || '';
+    this.color = data.color || '#2D5A27';
+    this.icon = data.icon || '🌍';
+    this.image = data.image || null;
+    this.isActive = data.isActive !== undefined ? data.isActive : true;
+    this.sortOrder = data.sortOrder || 0;
+    this.metaTitle = data.metaTitle || '';
+    this.metaDescription = data.metaDescription || '';
+    this.parentCategory = data.parentCategory || null;
+    this.articleCount = data.articleCount || 0;
+    this.createdAt = data.createdAt || new Date();
+    this.updatedAt = data.updatedAt || new Date();
   }
-}, {
-  timestamps: true
-});
 
-// Indexes for better query performance
-categorySchema.index({ slug: 1 });
-categorySchema.index({ isActive: 1, sortOrder: 1 });
-categorySchema.index({ parentCategory: 1 });
-
-// Pre-save middleware to generate slug if not provided
-categorySchema.pre('save', function(next) {
-  if (!this.slug) {
-    this.slug = this.name
-      .toLowerCase()
-      .replace(/[^a-z0-9 -]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim('-');
+  // Get full category path (for nested categories)
+  get fullPath() {
+    if (this.parentCategory) {
+      return `${this.parentCategory.name} > ${this.name}`;
+    }
+    return this.name;
   }
-  next();
-});
 
-// Static method to get active categories
-categorySchema.statics.getActive = function() {
-  return this.find({ isActive: true })
-    .sort({ sortOrder: 1, name: 1 });
-};
+  // Generate slug from name
+  generateSlug() {
+    if (!this.slug && this.name) {
+      this.slug = this.name
+        .toLowerCase()
+        .replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim('-');
+    }
+  }
 
-// Static method to get categories with article count
-categorySchema.statics.getWithCount = function() {
-  return this.aggregate([
-    { $match: { isActive: true } },
-    {
-      $lookup: {
-        from: 'articles',
-        localField: '_id',
-        foreignField: 'category',
-        pipeline: [
-          { $match: { status: 'published' } }
-        ],
-        as: 'articles'
+  // Save category to Realtime Database
+  async save() {
+    this.generateSlug();
+    
+    const categoryData = {
+      name: this.name,
+      slug: this.slug,
+      description: this.description,
+      color: this.color,
+      icon: this.icon,
+      image: this.image,
+      isActive: this.isActive,
+      sortOrder: this.sortOrder,
+      metaTitle: this.metaTitle,
+      metaDescription: this.metaDescription,
+      parentCategory: this.parentCategory,
+      articleCount: this.articleCount,
+      createdAt: this.createdAt,
+      updatedAt: new Date()
+    };
+
+    if (this.id) {
+      // Update existing category
+      await db.ref(`categories/${this.id}`).update(categoryData);
+      this.updatedAt = categoryData.updatedAt;
+    } else {
+      // Create new category
+      const categoryRef = await db.ref('categories').push(categoryData);
+      this.id = categoryRef.key;
+      this.createdAt = categoryData.createdAt;
+      this.updatedAt = categoryData.updatedAt;
+    }
+
+    return this;
+  }
+
+  // Find category by ID
+  static async findById(id) {
+    const snapshot = await db.ref(`categories/${id}`).once('value');
+    if (!snapshot.exists()) return null;
+    
+    return new Category({ id: snapshot.key, ...snapshot.val() });
+  }
+
+  // Find category by slug
+  static async findBySlug(slug) {
+    const snapshot = await db.ref('categories')
+      .orderByChild('slug')
+      .equalTo(slug)
+      .once('value');
+    
+    if (!snapshot.exists()) return null;
+    
+    const categoryData = snapshot.val();
+    const categoryId = Object.keys(categoryData)[0];
+    return new Category({ id: categoryId, ...categoryData[categoryId] });
+  }
+
+  // Get active categories
+  static async getActive() {
+    const snapshot = await db.ref('categories')
+      .orderByChild('isActive')
+      .equalTo(true)
+      .once('value');
+    
+    if (!snapshot.exists()) return [];
+    
+    const categories = [];
+    snapshot.forEach((childSnapshot) => {
+      categories.push(new Category({ id: childSnapshot.key, ...childSnapshot.val() }));
+    });
+    
+    // Sort by sortOrder and name
+    return categories.sort((a, b) => {
+      if (a.sortOrder !== b.sortOrder) {
+        return a.sortOrder - b.sortOrder;
       }
-    },
-    {
-      $addFields: {
-        articleCount: { $size: '$articles' }
-      }
-    },
-    { $unset: 'articles' },
-    { $sort: { sortOrder: 1, name: 1 } }
-  ]);
-};
-
-// Method to update article count
-categorySchema.methods.updateArticleCount = async function() {
-  const Article = mongoose.model('Article');
-  const count = await Article.countDocuments({
-    category: this._id,
-    status: 'published'
-  });
-  this.articleCount = count;
-  return this.save();
-};
-
-// Virtual for full category path (for nested categories)
-categorySchema.virtual('fullPath').get(function() {
-  if (this.parentCategory) {
-    return `${this.parentCategory.name} > ${this.name}`;
+      return a.name.localeCompare(b.name);
+    });
   }
-  return this.name;
-});
 
-// Ensure virtuals are included in JSON output
-categorySchema.set('toJSON', { virtuals: true });
-categorySchema.set('toObject', { virtuals: true });
+  // Get categories with article count
+  static async getWithCount() {
+    const categories = await this.getActive();
+    
+    // Get article counts for each category
+    for (let category of categories) {
+      const articlesSnapshot = await db.ref('articles')
+        .orderByChild('category')
+        .equalTo(category.id)
+        .once('value');
+      
+      let count = 0;
+      if (articlesSnapshot.exists()) {
+        articlesSnapshot.forEach((childSnapshot) => {
+          const article = childSnapshot.val();
+          if (article.status === 'published') {
+            count++;
+          }
+        });
+      }
+      
+      category.articleCount = count;
+    }
+    
+    return categories;
+  }
 
-module.exports = mongoose.model('Category', categorySchema); 
+  // Find all categories
+  static async findAll() {
+    const snapshot = await db.ref('categories').once('value');
+    if (!snapshot.exists()) return [];
+    
+    const categories = [];
+    snapshot.forEach((childSnapshot) => {
+      categories.push(new Category({ id: childSnapshot.key, ...childSnapshot.val() }));
+    });
+    
+    // Sort by sortOrder and name
+    return categories.sort((a, b) => {
+      if (a.sortOrder !== b.sortOrder) {
+        return a.sortOrder - b.sortOrder;
+      }
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  // Update article count
+  async updateArticleCount() {
+    const articlesSnapshot = await db.ref('articles')
+      .orderByChild('category')
+      .equalTo(this.id)
+      .once('value');
+    
+    let count = 0;
+    if (articlesSnapshot.exists()) {
+      articlesSnapshot.forEach((childSnapshot) => {
+        const article = childSnapshot.val();
+        if (article.status === 'published') {
+          count++;
+        }
+      });
+    }
+    
+    this.articleCount = count;
+    return await this.save();
+  }
+
+  // Delete category
+  async delete() {
+    if (this.id) {
+      await db.ref(`categories/${this.id}`).remove();
+    }
+  }
+
+  // Update category (instance method)
+  async update(updates) {
+    Object.assign(this, updates);
+    this.updatedAt = new Date();
+    return await this.save();
+  }
+
+  // Update category (static method)
+  static async update(id, updates) {
+    const category = await Category.findById(id);
+    if (!category) return null;
+    
+    Object.assign(category, updates);
+    category.updatedAt = new Date();
+    return await category.save();
+  }
+
+  // Delete category (static method)
+  static async delete(id) {
+    const category = await Category.findById(id);
+    if (!category) return false;
+    
+    await category.delete();
+    return true;
+  }
+}
+
+module.exports = Category; 

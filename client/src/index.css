@@ -10,8 +10,8 @@
 
   body {
     font-family: 'Inter', sans-serif;
-    background-color: #FFF8E1;
-    color: #3E2723;
+    background-color: #f0edea;
+    color: #22180e;
     line-height: 1.6;
   }
 
@@ -27,35 +27,35 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #FDF6E3;
+    background: #f5f2ed;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #8D6E63;
+    background: #7a6a5c;
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #6D4C41;
+    background: #65574c;
   }
 }
 
 /* Custom component styles */
 @layer components {
   .btn-primary {
-    @apply bg-mocha-500 hover:bg-mocha-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-mocha-500 focus:ring-offset-2;
+    @apply bg-eternity-700 hover:bg-eternity-800 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-eternity-500 focus:ring-offset-2;
   }
 
   .btn-secondary {
-    @apply bg-pink-200 hover:bg-pink-300 text-mocha-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2;
+    @apply bg-alpine-200 hover:bg-alpine-300 text-eternity-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-alpine-500 focus:ring-offset-2;
   }
 
   .btn-outline {
-    @apply border-2 border-mocha-500 text-mocha-500 hover:bg-mocha-500 hover:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-mocha-500 focus:ring-offset-2;
+    @apply border-2 border-eternity-600 text-eternity-600 hover:bg-eternity-600 hover:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-eternity-500 focus:ring-offset-2;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-soft border border-cream-200 overflow-hidden transition-all duration-300 hover:shadow-medium;
+    @apply bg-white-rock-400 rounded-xl shadow-soft border border-sidecar-300 overflow-hidden transition-all duration-300 hover:shadow-medium;
   }
 
   .card-hover {
@@ -63,15 +63,15 @@
   }
 
   .input-field {
-    @apply w-full px-4 py-3 border border-cream-300 rounded-lg focus:ring-2 focus:ring-mocha-500 focus:border-transparent transition-colors duration-200 bg-white;
+    @apply w-full px-4 py-3 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent transition-colors duration-200 bg-white-rock-400;
   }
 
   .textarea-field {
-    @apply w-full px-4 py-3 border border-cream-300 rounded-lg focus:ring-2 focus:ring-mocha-500 focus:border-transparent transition-colors duration-200 bg-white resize-vertical;
+    @apply w-full px-4 py-3 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent transition-colors duration-200 bg-white-rock-400 resize-vertical;
   }
 
   .select-field {
-    @apply w-full px-4 py-3 border border-cream-300 rounded-lg focus:ring-2 focus:ring-mocha-500 focus:border-transparent transition-colors duration-200 bg-white;
+    @apply w-full px-4 py-3 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent transition-colors duration-200 bg-white-rock-400;
   }
 
   .badge {
@@ -79,11 +79,11 @@
   }
 
   .badge-primary {
-    @apply bg-mocha-100 text-mocha-800;
+    @apply bg-eternity-100 text-eternity-800;
   }
 
   .badge-secondary {
-    @apply bg-pink-100 text-pink-800;
+    @apply bg-alpine-100 text-alpine-800;
   }
 
   .badge-success {
@@ -99,17 +99,17 @@
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-mocha-600 to-pink-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-eternity-700 to-tabasco-600 bg-clip-text text-transparent;
   }
 
   .pastry-bg {
     background-image: 
-      radial-gradient(circle at 25% 25%, rgba(248, 187, 217, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 75% 75%, rgba(141, 110, 99, 0.1) 0%, transparent 50%);
+      radial-gradient(circle at 25% 25%, rgba(191, 152, 53, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(34, 24, 14, 0.1) 0%, transparent 50%);
   }
 
   .hero-gradient {
-    background: linear-gradient(135deg, #FDF6E3 0%, #F8BBD9 50%, #8D6E63 100%);
+    background: linear-gradient(135deg, #edeadd 0%, #bf9835 50%, #22180e 100%);
   }
 
   .text-shadow {
@@ -121,7 +121,7 @@
   }
 
   .loading-spinner {
-    @apply animate-spin rounded-full border-4 border-cream-200 border-t-mocha-500;
+    @apply animate-spin rounded-full border-4 border-sidecar-300 border-t-eternity-600;
   }
 
   .fade-in {

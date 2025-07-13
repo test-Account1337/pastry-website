@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-const mongoose = require('mongoose');
+const { db } = require('./server/config/firebase');
 const bcrypt = require('bcryptjs');
-require('dotenv').config();
 
 // Import models
 const User = require('./server/models/User');
@@ -11,120 +10,120 @@ const Article = require('./server/models/Article');
 
 const sampleCategories = [
   {
-    name: 'Pastry Techniques',
-    slug: 'pastry-techniques',
-    description: 'Master the fundamental techniques of pastry arts',
-    color: '#F8BBD9',
+    name: 'African Cuisine',
+    slug: 'african-cuisine',
+    description: 'Traditional and modern African culinary techniques',
+    color: '#2D5A27',
     isActive: true
   },
   {
-    name: 'Chef Interviews',
-    slug: 'chef-interviews',
-    description: 'Exclusive interviews with renowned pastry chefs',
-    color: '#8D6E63',
+    name: 'Chef Profiles',
+    slug: 'chef-profiles',
+    description: 'Exclusive interviews with African culinary professionals',
+    color: '#8B4513',
     isActive: true
   },
   {
     name: 'Industry News',
     slug: 'industry-news',
-    description: 'Latest updates from the pastry industry',
-    color: '#FFB74D',
+    description: 'Latest updates from the African culinary industry',
+    color: '#D2691E',
     isActive: true
   },
   {
-    name: 'Recipe Development',
-    slug: 'recipe-development',
-    description: 'Innovative recipes and development processes',
-    color: '#81C784',
+    name: 'Culinary Innovation',
+    slug: 'culinary-innovation',
+    description: 'Innovative African recipes and development processes',
+    color: '#228B22',
     isActive: true
   },
   {
-    name: 'Competition Coverage',
-    slug: 'competition-coverage',
-    description: 'Coverage of pastry competitions and events',
-    color: '#F06292',
+    name: 'Events & Competitions',
+    slug: 'events-competitions',
+    description: 'Coverage of African culinary competitions and events',
+    color: '#CD853F',
     isActive: true
   }
 ];
 
 const sampleArticles = [
   {
-    title: 'The Art of French Macarons: A Complete Guide',
-    slug: 'art-of-french-macarons-complete-guide',
-    excerpt: 'Master the delicate art of creating perfect French macarons with our comprehensive guide covering techniques, tips, and troubleshooting.',
-    featuredImage: 'https://images.unsplash.com/photo-1569864358645-9d1684040f43?w=800&h=600&fit=crop',
+    title: 'The Art of West African Jollof Rice: A Complete Guide',
+    slug: 'art-of-west-african-jollof-rice-complete-guide',
+    excerpt: 'Master the art of creating authentic West African Jollof rice with our comprehensive guide covering techniques, tips, and regional variations.',
+    featuredImage: 'https://images.unsplash.com/photo-1563379091339-03246963d4a9?w=800&h=600&fit=crop',
     content: `
-      <h2>Introduction to French Macarons</h2>
-      <p>French macarons are one of the most elegant and challenging pastries to master. These delicate almond-based cookies with a smooth ganache filling require precision, patience, and practice.</p>
+      <h2>Introduction to Jollof Rice</h2>
+      <p>Jollof rice is one of the most celebrated dishes in West African cuisine. This flavorful one-pot rice dish, cooked in a rich tomato sauce with aromatic spices, is a staple at celebrations and gatherings across the region.</p>
       
       <h2>Essential Ingredients</h2>
       <ul>
-        <li>Almond flour (finely ground)</li>
-        <li>Powdered sugar</li>
-        <li>Egg whites (aged for 24-48 hours)</li>
-        <li>Granulated sugar</li>
-        <li>Food coloring (optional)</li>
+        <li>Long-grain rice (preferably parboiled)</li>
+        <li>Fresh tomatoes and tomato paste</li>
+        <li>Scotch bonnet peppers</li>
+        <li>Onions and garlic</li>
+        <li>African spices and herbs</li>
       </ul>
       
       <h2>Step-by-Step Process</h2>
-      <p>The key to perfect macarons lies in the macaronage technique - the process of folding the dry ingredients into the meringue. This step determines the final texture and appearance of your macarons.</p>
+      <p>The key to perfect Jollof rice lies in the layering technique - building flavors through careful timing and the right balance of ingredients. This process creates the signature smoky, rich taste that makes Jollof rice so beloved.</p>
       
       <h2>Common Mistakes to Avoid</h2>
-      <p>Over-mixing the batter, under-mixing, incorrect oven temperature, and improper resting time are common pitfalls that can lead to failed macarons.</p>
+      <p>Over-stirring the rice, using the wrong rice variety, insufficient seasoning, and improper heat control are common pitfalls that can lead to mushy or bland Jollof rice.</p>
       
       <h2>Tips for Success</h2>
       <ul>
-        <li>Use aged egg whites for better stability</li>
-        <li>Ensure all equipment is completely clean and dry</li>
-        <li>Let macarons rest before baking to form a skin</li>
-        <li>Use an oven thermometer for accurate temperature</li>
+        <li>Use parboiled rice for better texture</li>
+        <li>Allow the tomato base to cook down properly</li>
+        <li>Don't stir too much once rice is added</li>
+        <li>Use a heavy-bottomed pot for even cooking</li>
       </ul>
     `,
     status: 'published',
-    tags: ['macarons', 'french-pastry', 'techniques', 'baking'],
+    tags: ['jollof-rice', 'west-african-cuisine', 'techniques', 'cooking'],
     views: 1250,
     likes: 89
   },
   {
-    title: 'Interview with Chef Pierre Dubois: Modern Pastry Innovation',
-    slug: 'interview-chef-pierre-dubois-modern-pastry-innovation',
-    excerpt: 'An exclusive conversation with renowned pastry chef Pierre Dubois about innovation, sustainability, and the future of pastry arts.',
+    title: 'Interview with Chef Fatou Ndiaye: Modern African Cuisine Innovation',
+    slug: 'interview-chef-fatou-ndiaye-modern-african-cuisine-innovation',
+    excerpt: 'An exclusive conversation with renowned Senegalese chef Fatou Ndiaye about innovation, sustainability, and the future of African cuisine.',
     featuredImage: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=600&fit=crop',
     content: `
-      <h2>Meet Chef Pierre Dubois</h2>
-      <p>Chef Pierre Dubois has been at the forefront of pastry innovation for over two decades. His Paris-based patisserie has earned three Michelin stars and is known for pushing the boundaries of traditional French pastry.</p>
+      <h2>Meet Chef Fatou Ndiaye</h2>
+      <p>Chef Fatou Ndiaye has been at the forefront of African cuisine innovation for over two decades. Her Dakar-based restaurant has earned international recognition and is known for pushing the boundaries of traditional African cooking.</p>
       
-      <h2>On Innovation in Pastry</h2>
-      <p>"Innovation doesn't mean abandoning tradition," says Chef Dubois. "It means understanding the fundamentals so well that you can respectfully evolve them. Every new technique I develop is built on centuries of pastry knowledge."</p>
+      <h2>On Innovation in African Cuisine</h2>
+      <p>"Innovation doesn't mean abandoning tradition," says Chef Ndiaye. "It means understanding the fundamentals so well that you can respectfully evolve them. Every new technique I develop is built on centuries of African culinary knowledge."</p>
       
       <h2>Sustainability in the Kitchen</h2>
-      <p>Chef Dubois has been a pioneer in sustainable pastry practices, from sourcing local ingredients to reducing food waste through creative techniques.</p>
+      <p>Chef Ndiaye has been a pioneer in sustainable African cooking practices, from sourcing local ingredients to reducing food waste through creative techniques.</p>
       
-      <h2>The Future of Pastry</h2>
-      <p>"I see a future where pastry becomes even more personal and experiential. Technology will help us create textures and flavors we never thought possible, but the human touch will always be essential."</p>
+      <h2>The Future of African Cuisine</h2>
+      <p>"I see a future where African cuisine becomes even more personal and experiential. Technology will help us create textures and flavors we never thought possible, but the human touch will always be essential."</p>
     `,
     status: 'published',
-    tags: ['chef-interview', 'innovation', 'sustainability', 'french-pastry'],
+    tags: ['chef-interview', 'innovation', 'sustainability', 'african-cuisine'],
     views: 890,
     likes: 67
   },
   {
-    title: '2024 Pastry Industry Trends: What\'s Next?',
-    slug: '2024-pastry-industry-trends-whats-next',
-    excerpt: 'Explore the latest trends shaping the pastry industry in 2024, from plant-based innovations to technology integration.',
+    title: '2024 African Culinary Industry Trends: What\'s Next?',
+    slug: '2024-african-culinary-industry-trends-whats-next',
+    excerpt: 'Explore the latest trends shaping the African culinary industry in 2024, from traditional revival to modern innovation.',
     featuredImage: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&h=600&fit=crop',
     content: `
-      <h2>Plant-Based Revolution</h2>
-      <p>The plant-based movement continues to gain momentum in pastry, with innovative alternatives to traditional ingredients like eggs, butter, and cream.</p>
+      <h2>Traditional Revival</h2>
+      <p>The revival of traditional African cooking methods and ingredients continues to gain momentum, with chefs rediscovering ancient techniques and forgotten ingredients.</p>
       
       <h2>Technology Integration</h2>
-      <p>From 3D-printed decorations to AI-assisted recipe development, technology is transforming how pastry chefs work and create.</p>
+      <p>From modern cooking equipment to digital platforms for sharing recipes, technology is transforming how African chefs work and preserve culinary traditions.</p>
       
       <h2>Sustainability Focus</h2>
-      <p>Consumers are increasingly demanding sustainable practices, from ingredient sourcing to packaging and waste reduction.</p>
+      <p>Consumers are increasingly demanding sustainable practices, from local ingredient sourcing to traditional preservation methods and waste reduction.</p>
       
-      <h2>Global Fusion</h2>
-      <p>Chefs are blending traditional techniques with global flavors, creating exciting new pastry experiences that celebrate cultural diversity.</p>
+      <h2>Global Recognition</h2>
+      <p>African cuisine is gaining international recognition, with chefs blending traditional techniques with modern approaches, creating exciting new culinary experiences that celebrate African diversity.</p>
     `,
     status: 'published',
     tags: ['industry-trends', '2024', 'innovation', 'sustainability'],
@@ -135,31 +134,31 @@ const sampleArticles = [
 
 async function setupDatabase() {
   try {
-    console.log('🔗 Connecting to MongoDB...');
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/pastry-news');
-    console.log('✅ Connected to MongoDB');
+    console.log('🔗 Connecting to Firebase...');
+    console.log('✅ Connected to Firebase');
 
     // Clear existing data
     console.log('🧹 Clearing existing data...');
-    await User.deleteMany({});
-    await Category.deleteMany({});
-    await Article.deleteMany({});
+    
+    // Clear all data
+    await db.ref().remove();
+    
+    console.log('✅ Cleared existing data');
 
     // Create admin user
     console.log('👤 Creating admin user...');
-    const hashedPassword = await bcrypt.hash('admin123', 12);
     const adminUser = new User({
       username: 'admin',
       firstName: 'Admin',
       lastName: 'User',
-      email: 'admin@pastrynews.com',
-      password: hashedPassword,
+      email: 'admin@uacp.org',
+      password: 'admin123',
       role: 'admin',
       isActive: true,
       emailVerified: true
     });
     await adminUser.save();
-    console.log('✅ Admin user created: admin@pastrynews.com / admin123');
+    console.log('✅ Admin user created: admin@uacp.org / admin123');
 
     // Create categories
     console.log('📂 Creating sample categories...');
@@ -176,8 +175,8 @@ async function setupDatabase() {
     for (const articleData of sampleArticles) {
       const article = new Article({
         ...articleData,
-        author: adminUser._id,
-        category: createdCategories[Math.floor(Math.random() * createdCategories.length)]._id
+        author: adminUser.id,
+        category: createdCategories[Math.floor(Math.random() * createdCategories.length)].id
       });
       await article.save();
       console.log(`✅ Created article: ${article.title}`);
@@ -185,7 +184,7 @@ async function setupDatabase() {
 
     console.log('\n🎉 Setup completed successfully!');
     console.log('\n📋 Login Credentials:');
-    console.log('Email: admin@pastrynews.com');
+    console.log('Email: admin@uacp.org');
     console.log('Password: admin123');
     console.log('\n🌐 Access your application:');
     console.log('Frontend: http://localhost:3000');
@@ -195,9 +194,6 @@ async function setupDatabase() {
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
     process.exit(1);
-  } finally {
-    await mongoose.disconnect();
-    console.log('🔌 Disconnected from MongoDB');
   }
 }
 

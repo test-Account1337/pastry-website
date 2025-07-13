@@ -55,10 +55,14 @@ router.post('/login', [
         });
       }
       // Update last login
-      user.lastLogin = new Date();
-      await user.save();
+      const updateData = {
+        lastLogin: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      await User.update(user.id, updateData);
+      
       // Generate token
-      const token = generateToken(user._id);
+      const token = generateToken(user.id);
       return res.json({
         message: 'Login successful',
         token,
@@ -102,9 +106,10 @@ router.post('/register', [
     const { username, email, password, firstName, lastName, role, bio } = req.body;
 
     // Check if user already exists
-    const existingUser = await User.findOne({
-      $or: [{ email }, { username }]
-    });
+    const users = await User.findAll();
+    const existingUser = users.find(user => 
+      user.email === email || user.username === username
+    );
 
     if (existingUser) {
       return res.status(400).json({ 
@@ -113,29 +118,27 @@ router.post('/register', [
     }
 
     // Create new user
-    const user = new User({
+    const userData = {
       username,
       email,
       password,
       firstName,
       lastName,
       role,
-      bio
-    });
+      bio,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
 
-    await user.save();
+    const user = await User.create(userData);
 
     res.status(201).json({
       message: 'User created successfully',
-      user: user.toPublicJSON()
+      user: user
     });
   } catch (error) {
     console.error('Registration error:', error);
-    if (error.code === 11000) {
-      return res.status(400).json({ 
-        message: 'User with this email or username already exists' 
-      });
-    }
     res.status(500).json({ 
       message: 'Server error' 
     });
@@ -148,7 +151,7 @@ router.post('/register', [
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     res.json({
-      user: req.user.toPublicJSON()
+      user: req.user
     });
   } catch (error) {
     console.error('Get profile error:', error);
@@ -178,16 +181,18 @@ router.put('/profile', [
 
     const { firstName, lastName, bio } = req.body;
 
-    const user = await User.findById(req.user._id);
-    user.firstName = firstName;
-    user.lastName = lastName;
-    if (bio !== undefined) user.bio = bio;
+    const updateData = {
+      firstName,
+      lastName,
+      bio,
+      updatedAt: new Date().toISOString()
+    };
 
-    await user.save();
+    const updatedUser = await User.update(req.user.id, updateData);
 
     res.json({
       message: 'Profile updated successfully',
-      user: user.toPublicJSON()
+      user: updatedUser
     });
   } catch (error) {
     console.error('Update profile error:', error);
@@ -216,7 +221,7 @@ router.put('/password', [
 
     const { currentPassword, newPassword } = req.body;
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id);
     
     // Verify current password
     const isMatch = await user.comparePassword(currentPassword);
@@ -227,8 +232,11 @@ router.put('/password', [
     }
 
     // Update password
-    user.password = newPassword;
-    await user.save();
+    const updateData = {
+      password: newPassword,
+      updatedAt: new Date().toISOString()
+    };
+    await User.update(req.user.id, updateData);
 
     res.json({
       message: 'Password changed successfully'
@@ -246,8 +254,13 @@ router.put('/password', [
 // @access  Private (Admin)
 router.get('/users', authenticateToken, requireAdmin, async (req, res) => {
   try {
-    const users = await User.find({}).select('-password');
-    res.json({ users });
+    const users = await User.findAll();
+    // Remove passwords from response
+    const usersWithoutPassword = users.map(user => {
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    });
+    res.json({ users: usersWithoutPassword });
   } catch (error) {
     console.error('Get users error:', error);
     res.status(500).json({ 
@@ -268,12 +281,17 @@ router.put('/users/:id/status', authenticateToken, requireAdmin, async (req, res
       });
     }
 
-    user.isActive = !user.isActive;
-    await user.save();
+    const newStatus = !user.isActive;
+    const updateData = {
+      isActive: newStatus,
+      updatedAt: new Date().toISOString()
+    };
+
+    const updatedUser = await User.update(req.params.id, updateData);
 
     res.json({
-      message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully`,
-      user: user.toPublicJSON()
+      message: `User ${newStatus ? 'activated' : 'deactivated'} successfully`,
+      user: updatedUser
     });
   } catch (error) {
     console.error('Toggle user status error:', error);

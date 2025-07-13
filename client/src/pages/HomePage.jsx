@@ -61,13 +61,13 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>Pastry News - Your Premier Pastry Industry Source</title>
-        <meta name="description" content="Discover the latest trends, chef interviews, and industry updates from the world of pastry arts. Your premier source for pastry news and insights." />
+        <title>UACP - Union Africaine des Chefs Professionnels</title>
+        <meta name="description" content="Uniting African culinary professionals, promoting excellence, and advancing the gastronomy industry across the continent. Your premier source for African culinary news and insights." />
       </Helmet>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-tl from-mocha-900 via-mocha-800 to-mocha-700 min-h-[80vh] flex items-center">
-        <div className="absolute inset-0 opacity-50"></div>
+      <section className="relative overflow-hidden min-h-[80vh] flex items-center" style={{ backgroundImage: 'url(/images/hero_section_bg.png)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-gradient-to-tl from-eternity-900/80 via-eternity-800/70 to-eternity-700/60"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -75,27 +75,26 @@ const HomePage = () => {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-black text-shadow mb-6">
-              Your Premier
-              <span className="block text-pink-200">Pastry News</span>
-              Source
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white text-shadow mb-6">
+              Union Africaine des
+              <span className="block text-alpine-300">Chefs Professionnels</span>
             </h1>
-            <p className="text-xl md:text-2xl text-black/90 mb-8 max-w-3xl mx-auto">
-              Discover the latest trends, chef interviews, and industry insights from the world of pastry arts
+            <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
+              Uniting African culinary professionals, promoting excellence, and advancing the gastronomy industry across the continent
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/articles"
-                className="btn-primary text-lg px-8 py-4 bg-white text-mocha-600 hover:bg-cream-100"
+                className="btn-primary text-lg px-8 py-4 bg-alpine-400 text-eternity-900 hover:bg-alpine-300"
               >
-                Explore Articles
+                Explore News
                 <FiArrowRight className="ml-2" />
               </Link>
               <Link
                 to="/about"
-                className="btn-outline text-lg px-8 py-4 border-white text-black hover:bg-white hover:text-mocha-600"
+                className="btn-outline text-lg px-8 py-4 border-alpine-300 text-alpine-300 hover:bg-alpine-300 hover:text-eternity-900"
               >
-                Learn More
+                About UACP
               </Link>
             </div>
           </motion.div>
@@ -108,7 +107,7 @@ const HomePage = () => {
       </section>
 
       {/* Featured Articles Section */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-16 lg:py-24 bg-white-rock-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -117,11 +116,11 @@ const HomePage = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-mocha-700 mb-4">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-eternity-700 mb-4">
               Featured Stories
             </h2>
-            <p className="text-lg text-mocha-600 max-w-2xl mx-auto">
-              Handpicked articles showcasing the best of pastry innovation, technique, and creativity
+            <p className="text-lg text-eternity-600 max-w-2xl mx-auto">
+              Handpicked articles showcasing the best of culinary innovation, technique, and creativity
             </p>
           </motion.div>
 
@@ -154,7 +153,7 @@ const HomePage = () => {
               to="/articles"
               className="btn-primary text-lg px-8 py-3 inline-flex items-center"
             >
-              View All Articles
+              View All News
               <FiArrowRight className="ml-2" />
             </Link>
           </motion.div>
@@ -162,7 +161,7 @@ const HomePage = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 lg:py-24 bg-cream-50">
+      <section className="py-16 lg:py-24 bg-eternity-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -171,11 +170,11 @@ const HomePage = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-mocha-700 mb-4">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-eternity-700 mb-4">
               Explore Categories
             </h2>
-            <p className="text-lg text-mocha-600 max-w-2xl mx-auto">
-              Dive into specific areas of pastry arts that interest you most
+            <p className="text-lg text-eternity-600 max-w-2xl mx-auto">
+              Dive into specific areas of culinary arts that interest you most
             </p>
           </motion.div>
 
@@ -200,7 +199,7 @@ const HomePage = () => {
       </section>
 
       {/* Latest Articles Section */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-16 lg:py-24 bg-white-rock-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -209,11 +208,11 @@ const HomePage = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-display font-bold text-mocha-700 mb-4">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-eternity-700 mb-4">
               Latest News
             </h2>
-            <p className="text-lg text-mocha-600 max-w-2xl mx-auto">
-              Stay updated with the freshest content from the pastry world
+            <p className="text-lg text-eternity-600 max-w-2xl mx-auto">
+              Stay updated with the freshest content from the culinary world
             </p>
           </motion.div>
 
@@ -238,7 +237,7 @@ const HomePage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 lg:py-24 bg-mocha-600 text-white">
+      <section className="py-16 lg:py-24 bg-eternity-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -250,8 +249,8 @@ const HomePage = () => {
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
               Join Our Community
             </h2>
-            <p className="text-xl text-mocha-200 max-w-2xl mx-auto">
-              Connect with pastry professionals and enthusiasts worldwide
+            <p className="text-xl text-sidecar-300 max-w-2xl mx-auto">
+              Connect with African culinary professionals and enthusiasts worldwide
             </p>
           </motion.div>
 
@@ -263,20 +262,20 @@ const HomePage = () => {
             className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
           >
             <motion.div variants={itemVariants} className="space-y-2">
-              <div className="text-3xl md:text-4xl font-bold text-pink-200">500+</div>
-              <div className="text-mocha-200">Articles Published</div>
+              <div className="text-3xl md:text-4xl font-bold text-alpine-300">500+</div>
+              <div className="text-sidecar-300">Articles Published</div>
             </motion.div>
             <motion.div variants={itemVariants} className="space-y-2">
-              <div className="text-3xl md:text-4xl font-bold text-pink-200">50+</div>
-              <div className="text-mocha-200">Expert Chefs</div>
+              <div className="text-3xl md:text-4xl font-bold text-alpine-300">50+</div>
+              <div className="text-sidecar-300">Expert Chefs</div>
             </motion.div>
             <motion.div variants={itemVariants} className="space-y-2">
-              <div className="text-3xl md:text-4xl font-bold text-pink-200">10K+</div>
-              <div className="text-mocha-200">Monthly Readers</div>
+              <div className="text-3xl md:text-4xl font-bold text-alpine-300">10K+</div>
+              <div className="text-sidecar-300">Monthly Readers</div>
             </motion.div>
             <motion.div variants={itemVariants} className="space-y-2">
-              <div className="text-3xl md:text-4xl font-bold text-pink-200">25+</div>
-              <div className="text-mocha-200">Categories</div>
+              <div className="text-3xl md:text-4xl font-bold text-alpine-300">25+</div>
+              <div className="text-sidecar-300">Categories</div>
             </motion.div>
           </motion.div>
         </div>
