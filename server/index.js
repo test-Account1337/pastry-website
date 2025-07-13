@@ -40,10 +40,11 @@ app.use('/api/', limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
+  origin: (process.env.NODE_ENV === 'production' || process.env.PORT) 
     ? [
         'https://yourdomain.com',
         'https://pastry-website-frontend.up.railway.app',
+        'https://uacp.vercel.app',
         'https://your-vercel-app.vercel.app'
       ] 
     : ['http://localhost:3000'],
