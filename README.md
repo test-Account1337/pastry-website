@@ -23,7 +23,7 @@ A modern, responsive website dedicated to news, articles, and updates about past
 
 - **Frontend**: React.js with Tailwind CSS
 - **Backend**: Node.js with Express
-- **Database**: MongoDB with Mongoose
+- **Database**: Firebase Realtime Database
 - **Authentication**: JWT with bcrypt
 - **File Upload**: Cloudinary integration
 - **Email**: Nodemailer for contact forms

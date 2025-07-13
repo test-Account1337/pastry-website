@@ -115,3 +115,5 @@ public/uploads/
 # Backup files
 *.bak
 *.backup 
+
+github_token
