@@ -8,7 +8,7 @@ const NotFoundPage = () => {
   return (
     <>
       <Helmet>
-        <title>Page Not Found - UACP</title>
+        <title>{'404 Not Found'}</title>
         <meta name="description" content="The page you're looking for doesn't exist. Return to UACP news portal." />
       </Helmet>
 

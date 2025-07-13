@@ -69,7 +69,7 @@ const AboutPage = () => {
   return (
     <>
       <Helmet>
-        <title>About Us - Pastry News</title>
+        <title>{'About'}</title>
         <meta name="description" content="Learn about Pastry News, our mission to connect the pastry community, and the team behind the premier source for pastry industry insights." />
       </Helmet>
 

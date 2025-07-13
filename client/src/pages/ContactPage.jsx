@@ -104,7 +104,7 @@ const ContactPage = () => {
   return (
     <>
       <Helmet>
-        <title>Contact Us - Pastry News</title>
+        <title>{'Contact'}</title>
         <meta name="description" content="Get in touch with the Pastry News team. We'd love to hear from you about collaborations, feedback, or any questions you might have." />
       </Helmet>
 

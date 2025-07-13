@@ -325,6 +325,160 @@ router.get('/admin', [authenticateToken, requireAdminOrEditorOrAuthor], async (r
   }
 });
 
+// @route   GET /api/articles/search/suggestions
+// @desc    Get search suggestions
+// @access  Public
+router.get('/search/suggestions', [
+  query('q').isString().isLength({ min: 2 })
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ 
+        message: 'Validation error',
+        errors: errors.array() 
+      });
+    }
+
+    const { q } = req.query;
+    
+    const articles = await Article.findAll();
+    const suggestions = articles
+      .filter(article => 
+        article.status === 'published' &&
+        new Date(article.publishedAt) <= new Date() &&
+        (article.title.toLowerCase().includes(q.toLowerCase()) ||
+         article.excerpt.toLowerCase().includes(q.toLowerCase()))
+      )
+      .slice(0, 5)
+      .map(article => ({
+        title: article.title,
+        slug: article.slug
+      }));
+
+    res.json({ suggestions });
+  } catch (error) {
+    console.error('Search suggestions error:', error);
+    res.status(500).json({ 
+      message: 'Server error' 
+    });
+  }
+});
+
+// @route   GET /api/articles/search
+// @desc    Search articles by query string with pagination
+// @access  Public
+router.get('/search', async (req, res) => {
+  try {
+    const { 
+      query, 
+      page = 1, 
+      limit = 10, 
+      category, 
+      author, 
+      dateFrom, 
+      dateTo, 
+      sort = 'relevance' 
+    } = req.query;
+
+    if (!query || query.trim().length < 2) {
+      return res.json({ 
+        articles: [], 
+        pagination: {
+          currentPage: parseInt(page),
+          totalPages: 0,
+          total: 0,
+          hasNext: false,
+          hasPrev: false
+        }
+      });
+    }
+
+    // Get all articles and filter by search query
+    let articles = await Article.search(query, 100); // Get more results for filtering
+
+    // Apply additional filters
+    if (category) {
+      articles = articles.filter(article => article.category === category);
+    }
+
+    if (author) {
+      articles = articles.filter(article => article.author === author);
+    }
+
+    if (dateFrom) {
+      const fromDate = new Date(dateFrom);
+      articles = articles.filter(article => new Date(article.publishedAt) >= fromDate);
+    }
+
+    if (dateTo) {
+      const toDate = new Date(dateTo);
+      articles = articles.filter(article => new Date(article.publishedAt) <= toDate);
+    }
+
+    // Sort articles
+    switch (sort) {
+      case 'oldest':
+        articles.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
+        break;
+      case 'popular':
+        articles.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+        break;
+      case 'title':
+        articles.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'latest':
+      case 'relevance':
+      default:
+        articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    }
+
+    // Pagination
+    const total = articles.length;
+    const totalPages = Math.ceil(total / limit);
+    const skip = (page - 1) * limit;
+    const paginatedArticles = articles.slice(skip, skip + parseInt(limit));
+
+    // Populate author and category data
+    const populatedArticles = await Promise.all(
+      paginatedArticles.map(async (article) => {
+        const authorData = await User.findById(article.author);
+        const categoryData = await Category.findById(article.category);
+        
+        return {
+          ...article,
+          author: authorData ? {
+            _id: authorData._id,
+            firstName: authorData.firstName,
+            lastName: authorData.lastName,
+            avatar: authorData.avatar
+          } : null,
+          category: categoryData ? {
+            _id: categoryData._id,
+            name: categoryData.name,
+            slug: categoryData.slug,
+            color: categoryData.color
+          } : null
+        };
+      })
+    );
+
+    res.json({
+      articles: populatedArticles,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        total,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    });
+  } catch (error) {
+    console.error('Article search error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/articles/:slug
 // @desc    Get article by slug
 // @access  Public
@@ -647,43 +801,80 @@ router.post('/:id/like', async (req, res) => {
   }
 });
 
-// @route   GET /api/articles/search/suggestions
-// @desc    Get search suggestions
+// @route   GET /api/articles/category/:slug
+// @desc    Get all published articles for a given category slug
 // @access  Public
-router.get('/search/suggestions', [
-  query('q').isString().isLength({ min: 2 })
-], async (req, res) => {
+router.get('/category/:slug', async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ 
-        message: 'Validation error',
-        errors: errors.array() 
-      });
+    const { slug } = req.params;
+    const { page = 1, limit = 10, sort = 'latest' } = req.query;
+    const category = await Category.findBySlug(slug);
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found' });
     }
-
-    const { q } = req.query;
-    
-    const articles = await Article.findAll();
-    const suggestions = articles
-      .filter(article => 
-        article.status === 'published' &&
-        new Date(article.publishedAt) <= new Date() &&
-        (article.title.toLowerCase().includes(q.toLowerCase()) ||
-         article.excerpt.toLowerCase().includes(q.toLowerCase()))
-      )
-      .slice(0, 5)
-      .map(article => ({
-        title: article.title,
-        slug: article.slug
-      }));
-
-    res.json({ suggestions });
-  } catch (error) {
-    console.error('Search suggestions error:', error);
-    res.status(500).json({ 
-      message: 'Server error' 
+    // Get all articles for this category
+    let articles = await Article.getByCategory(category.id);
+    // Sort articles
+    switch (sort) {
+      case 'oldest':
+        articles.sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
+        break;
+      case 'popular':
+        articles.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+        break;
+      case 'featured':
+        articles.sort((a, b) => {
+          if (a.isFeatured && !b.isFeatured) return -1;
+          if (!a.isFeatured && b.isFeatured) return 1;
+          return new Date(b.publishedAt) - new Date(a.publishedAt);
+        });
+        break;
+      case 'title':
+        articles.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'latest':
+      default:
+        articles.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    }
+    // Pagination
+    const total = articles.length;
+    const totalPages = Math.ceil(total / limit);
+    const skip = (page - 1) * limit;
+    const paginatedArticles = articles.slice(skip, skip + parseInt(limit));
+    // Populate author and category data
+    const populatedArticles = await Promise.all(
+      paginatedArticles.map(async (article) => {
+        const authorData = await User.findById(article.author);
+        return {
+          ...article,
+          author: authorData ? {
+            _id: authorData._id,
+            firstName: authorData.firstName,
+            lastName: authorData.lastName,
+            avatar: authorData.avatar
+          } : null,
+          category: {
+            _id: category.id,
+            name: category.name,
+            slug: category.slug,
+            color: category.color
+          }
+        };
+      })
+    );
+    res.json({
+      articles: populatedArticles,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        total,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
     });
+  } catch (error) {
+    console.error('Get articles by category error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

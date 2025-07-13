@@ -7,6 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import './index.css';
 import App from './App';
 import { initializeApi } from './utils/api';
+import { LanguageProvider } from './context/LanguageContext';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -27,30 +28,32 @@ initializeApi().then(() => {
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <App />
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#FDF6E3',
-                color: '#3E2723',
-                border: '1px solid #8D6E63',
-              },
-              success: {
-                iconTheme: {
-                  primary: '#8D6E63',
-                  secondary: '#FDF6E3',
+          <LanguageProvider>
+            <App />
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#FDF6E3',
+                  color: '#3E2723',
+                  border: '1px solid #8D6E63',
                 },
-              },
-              error: {
-                iconTheme: {
-                  primary: '#E91E63',
-                  secondary: '#FDF6E3',
+                success: {
+                  iconTheme: {
+                    primary: '#8D6E63',
+                    secondary: '#FDF6E3',
+                  },
                 },
-              },
-            }}
-          />
+                error: {
+                  iconTheme: {
+                    primary: '#E91E63',
+                    secondary: '#FDF6E3',
+                  },
+                },
+              }}
+            />
+          </LanguageProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </HelmetProvider>

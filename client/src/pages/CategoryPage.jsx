@@ -86,13 +86,13 @@ const CategoryPage = () => {
     );
   }
 
-  const totalPages = articlesData?.totalPages || 1;
-  const totalArticles = articlesData?.total || 0;
+  const totalPages = articlesData?.data?.pagination?.totalPages || 1;
+  const totalArticles = articlesData?.data?.pagination?.total || 0;
 
   return (
     <>
       <Helmet>
-        <title>{category.name} - Pastry News</title>
+        <title>{(category?.metaTitle || category?.name || 'Category')}</title>
         <meta name="description" content={category.description || `Explore ${category.name} articles and insights from the pastry world.`} />
       </Helmet>
 

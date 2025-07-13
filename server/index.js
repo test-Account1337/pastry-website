@@ -33,20 +33,28 @@ app.use(helmet({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000, // higher limit for dev
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: (process.env.NODE_ENV === 'production' && process.env.PORT) 
-    ? [
-        'https://pastry-website-frontend.up.railway.app',
-        'https://uacp.vercel.app',
-        'http://localhost:3000'
-      ] 
-    : ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://uacp.vercel.app'],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'https://uacp.vercel.app',
+      'https://pastry-website-frontend.up.railway.app'
+    ];
+    // Allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -107,4 +115,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📱 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 API URL: http://localhost:${PORT}/api`);
-}); 
+});

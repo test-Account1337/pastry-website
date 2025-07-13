@@ -33,7 +33,7 @@ const SearchPage = () => {
   const sort = searchParams.get('sort') || 'relevance';
 
   // Fetch search results
-  const { data: searchData, isLoading } = useQuery(
+  const { data: searchData, isLoading, error } = useQuery(
     queryKeys.articles.search({
       query,
       page,
@@ -106,7 +106,7 @@ const SearchPage = () => {
   return (
     <>
       <Helmet>
-        <title>Search Results - Pastry News</title>
+        <title>{'Search Results'}</title>
         <meta name="description" content={`Search results for "${query}" - Find articles about pastry chefs, techniques, and industry news.`} />
       </Helmet>
 
@@ -154,7 +154,7 @@ const SearchPage = () => {
                   'Searching...'
                 ) : (
                   <>
-                    {searchData?.total || 0} results found
+                    {searchData?.data?.pagination?.total || 0} results found
                     {query && ` for "${query}"`}
                   </>
                 )}
@@ -347,7 +347,7 @@ const SearchPage = () => {
               </div>
             ) : isLoading ? (
               <LoadingSpinner />
-            ) : searchData?.articles?.length > 0 ? (
+            ) : searchData?.data?.articles?.length > 0 ? (
               <>
                 {/* Results Grid */}
                 <div
@@ -357,7 +357,7 @@ const SearchPage = () => {
                       : 'grid-cols-1'
                   }`}
                 >
-                  {searchData.articles.map((article) => (
+                  {searchData.data.articles.map((article) => (
                     <motion.div
                       key={article._id}
                       initial={{ opacity: 0, y: 20 }}
@@ -373,7 +373,7 @@ const SearchPage = () => {
                 </div>
 
                 {/* Pagination */}
-                {searchData.totalPages > 1 && (
+                {searchData?.data?.pagination?.totalPages > 1 && (
                   <div className="mt-12 flex justify-center">
                     <nav className="flex items-center space-x-2">
                       <button
@@ -384,7 +384,7 @@ const SearchPage = () => {
                         Previous
                       </button>
 
-                      {Array.from({ length: Math.min(5, searchData.totalPages) }, (_, i) => {
+                      {Array.from({ length: Math.min(5, searchData?.data?.pagination?.totalPages || 1) }, (_, i) => {
                         const pageNum = i + 1;
                         return (
                           <button
@@ -403,7 +403,7 @@ const SearchPage = () => {
 
                       <button
                         onClick={() => handlePageChange(page + 1)}
-                        disabled={page === searchData.totalPages}
+                        disabled={page === searchData?.data?.pagination?.totalPages}
                         className="flex items-center px-3 py-2 text-sm border border-mocha-200 rounded-lg hover:bg-mocha-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         Next

@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiMail, FiPhone, FiMapPin, FiTwitter, FiInstagram, FiFacebook, FiYoutube, FiUser } from 'react-icons/fi';
+import { useTranslation } from '../../utils/translations';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { t } = useTranslation();
 
   const footerLinks = {
     articles: [
@@ -49,34 +51,33 @@ const Footer = () => {
               </div>
               <div>
                 <h3 className="text-xl font-display font-bold">UACP</h3>
-                <p className="text-sm text-sidecar-300">Union Africaine des Chefs Professionnels</p>
+                <p className="text-sm text-sidecar-300">{t('footerSubtitle')}</p>
               </div>
             </div>
             <p className="text-sidecar-300 mb-6 max-w-md">
-              Uniting African culinary professionals, promoting excellence, and advancing the gastronomy industry across the continent. 
-              Join our community of African chefs and culinary enthusiasts.
+              {t('footerDescription')}
             </p>
             
             {/* Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sidecar-300">
                 <FiMail className="w-4 h-4" />
-                <span>hello@pastrynews.com</span>
+                <span>{t('footerEmail')}</span>
               </div>
               <div className="flex items-center space-x-3 text-sidecar-300">
                 <FiPhone className="w-4 h-4" />
-                <span>+212 612-345678</span>
+                <span>{t('footerPhone')}</span>
               </div>
               <div className="flex items-center space-x-3 text-sidecar-300">
                 <FiMapPin className="w-4 h-4" />
-                <span>10 Rue de la Liberté, Casablanca, Maroc</span>
+                <span>{t('address')}</span>
               </div>
             </div>
           </div>
 
           {/* News Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">News</h4>
+            <h4 className="text-lg font-semibold mb-4">{t('news')}</h4>
             <ul className="space-y-2">
               {footerLinks.articles.map((link) => (
                 <li key={link.name}>
@@ -84,7 +85,7 @@ const Footer = () => {
                     to={link.href}
                     className="text-sidecar-300 hover:text-white transition-colors duration-200"
                   >
-                    {link.name}
+                    {t(link.name.replace(/\s/g, ''))}
                   </Link>
                 </li>
               ))}
@@ -93,7 +94,7 @@ const Footer = () => {
 
           {/* Categories Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Categories</h4>
+            <h4 className="text-lg font-semibold mb-4">{t('categories')}</h4>
             <ul className="space-y-2">
               {footerLinks.categories.map((link) => (
                 <li key={link.name}>
@@ -101,7 +102,7 @@ const Footer = () => {
                     to={link.href}
                     className="text-sidecar-300 hover:text-white transition-colors duration-200"
                   >
-                    {link.name}
+                    {t(link.name.replace(/\s/g, ''))}
                   </Link>
                 </li>
               ))}
@@ -110,7 +111,7 @@ const Footer = () => {
 
           {/* Company Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Company</h4>
+            <h4 className="text-lg font-semibold mb-4">{t('company')}</h4>
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
@@ -118,7 +119,7 @@ const Footer = () => {
                     to={link.href}
                     className="text-sidecar-300 hover:text-white transition-colors duration-200"
                   >
-                    {link.name}
+                    {t(link.name.replace(/\s/g, ''))}
                   </Link>
                 </li>
               ))}
@@ -130,7 +131,7 @@ const Footer = () => {
         <div className="border-t border-eternity-700 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sidecar-300 text-sm">
-              © {currentYear} UACP. All rights reserved.
+              © {currentYear} UACP. {t('allRightsReserved')}
             </div>
             
             {/* Social Links */}

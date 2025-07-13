@@ -139,7 +139,6 @@ export const endpoints = {
     related: (id) => `/api/articles/${id}/related`,
     bulkDelete: '/api/articles/bulk-delete',
     toggleStatus: (id) => `/api/articles/${id}/status`,
-    dashboardStats: '/api/articles/dashboard/stats',
   },
   
   // Categories
@@ -197,8 +196,8 @@ export const apiService = {
   // Articles
   getArticles: (params) => api.get(endpoints.articles.list, { params }),
   getFeaturedArticles: () => api.get(endpoints.articles.featured),
-  getArticle: (slug) => api.get(endpoints.articles.single(slug)).then(res => res.data.article),
-  getArticleBySlug: (slug) => api.get(endpoints.articles.single(slug)).then(res => res.data.article),
+  getArticle: (slug) => api.get(endpoints.articles.single(slug)),
+  getArticleBySlug: (slug) => api.get(endpoints.articles.single(slug)),
   getRelatedArticles: (articleId, categoryId) => api.get(endpoints.articles.related(articleId), { params: { category: categoryId } }),
   searchArticles: (params) => api.get('/api/articles/search', { params }),
   createArticle: (data) => api.post(endpoints.articles.create, data),
@@ -209,7 +208,6 @@ export const apiService = {
   likeArticle: (id) => api.post(endpoints.articles.like(id)),
   getArticlesByCategory: (slug, params) => api.get(endpoints.articles.byCategory(slug), { params }),
   getAdminArticles: (params) => api.get(endpoints.articles.adminList, { params }).then(res => res.data),
-  getDashboardStats: () => api.get(endpoints.articles.dashboardStats).then(res => res.data),
   
   // Categories
   getCategories: () => {
@@ -235,7 +233,6 @@ export const apiService = {
   getAdminUsers: (params) => api.get(endpoints.users.adminList, { params }),
   toggleUserStatus: (data) => api.put(endpoints.users.toggleStatus(data.id), data),
   createUser: (data) => api.post(endpoints.users.list, data),
-  getPublicUsers: () => api.get('/api/users/public').then(res => res.data.users),
   
   // Contact
   sendContact: (data) => api.post(endpoints.contact.send, data),
@@ -243,30 +240,10 @@ export const apiService = {
   subscribeNewsletter: (data) => api.post(endpoints.contact.newsletter, data),
   
   // Upload
-  uploadImage: (formData) => api.post(endpoints.upload.image, formData, {
-    headers: {
-      'Content-Type': undefined, // Let browser set the correct Content-Type for FormData
-    },
-    timeout: 30000, // 30 seconds for image uploads
-  }),
-  uploadAvatar: (formData) => api.post(endpoints.upload.avatar, formData, {
-    headers: {
-      'Content-Type': undefined,
-    },
-    timeout: 30000,
-  }),
-  uploadFeaturedImage: (formData) => api.post(endpoints.upload.featuredImage, formData, {
-    headers: {
-      'Content-Type': undefined,
-    },
-    timeout: 30000,
-  }),
-  uploadMultipleImages: (formData) => api.post(endpoints.upload.multiple, formData, {
-    headers: {
-      'Content-Type': undefined,
-    },
-    timeout: 30000,
-  }),
+  uploadImage: (formData) => api.post(endpoints.upload.image, formData),
+  uploadAvatar: (formData) => api.post(endpoints.upload.avatar, formData),
+  uploadFeaturedImage: (formData) => api.post(endpoints.upload.featuredImage, formData),
+  uploadMultipleImages: (formData) => api.post(endpoints.upload.multiple, formData),
   deleteImage: (publicId) => api.delete(endpoints.upload.delete(publicId)),
   
   // Health check
@@ -282,11 +259,10 @@ export const queryKeys = {
     details: () => [...queryKeys.articles.all, 'detail'],
     detail: (slug) => [...queryKeys.articles.details(), slug],
     featured: () => [...queryKeys.articles.all, 'featured'],
-    adminList: (filters) => [...queryKeys.articles.all, 'admin', filters],
+    adminList: () => [...queryKeys.articles.all, 'admin'],
     byCategory: (slug) => [...queryKeys.articles.all, 'category', slug],
     related: (id) => [...queryKeys.articles.all, 'related', id],
     search: (params) => [...queryKeys.articles.all, 'search', params],
-    dashboardStats: () => [...queryKeys.articles.all, 'dashboard', 'stats'],
   },
   categories: {
     all: ['categories'],

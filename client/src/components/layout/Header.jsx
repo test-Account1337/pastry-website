@@ -3,8 +3,10 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiSearch, FiMenu, FiX, FiUser, FiChevronDown, FiGrid } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import SearchModal from '../common/SearchModal';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 import { useQuery } from 'react-query';
 import { apiService, queryKeys } from '../../utils/api';
+import { useTranslation } from '../../utils/translations';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,6 +14,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Fetch categories for navigation
   const { data: categoriesData } = useQuery(
@@ -43,10 +46,10 @@ const Header = () => {
   };
 
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'News', href: '/articles' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: t('home'), href: '/' },
+    { name: t('news'), href: '/articles' },
+    { name: t('about'), href: '/about' },
+    { name: t('contact'), href: '/contact' },
   ];
 
   return (
@@ -95,7 +98,7 @@ const Header = () => {
               {categoriesData?.categories && (
                 <div className="relative group">
                   <button className="text-sm font-medium text-eternity-600 hover:text-eternity-700 transition-colors duration-200 flex items-center space-x-1">
-                    <span>Categories</span>
+                    <span>{t('categories')}</span>
                     <FiChevronDown className="w-4 h-4" />
                   </button>
                   <div className="absolute top-full left-0 mt-2 w-64 bg-white-rock-400 rounded-lg shadow-large border border-sidecar-300 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
@@ -108,7 +111,7 @@ const Header = () => {
                         >
                           <div className="flex items-center space-x-2">
                             <FiGrid className="w-4 h-4 text-delta-500" />
-                            <span>{category.name}</span>
+                            <span>{t(category.slug) || category.name}</span>
                             <span className="text-xs text-delta-500">({category.articleCount})</span>
                           </div>
                         </Link>
@@ -118,7 +121,7 @@ const Header = () => {
                           to="/articles"
                           className="block px-4 py-2 text-sm text-eternity-600 hover:bg-sidecar-100 transition-colors duration-200"
                         >
-                          View All News →
+                          {t('viewAllNews')}
                         </Link>
                       </div>
                     </div>
@@ -137,12 +140,14 @@ const Header = () => {
                 <FiSearch className="w-5 h-5" />
               </button>
               
+              <LanguageSwitcher />
+              
               <Link
                 to="/admin/login"
                 className="flex items-center space-x-2 text-sm font-medium text-eternity-600 hover:text-eternity-700 transition-colors duration-200"
               >
                 <FiUser className="w-4 h-4" />
-                <span>Admin</span>
+                <span>{t('admin')}</span>
               </Link>
             </div>
 
@@ -155,6 +160,8 @@ const Header = () => {
               >
                 <FiSearch className="w-5 h-5" />
               </button>
+              
+              <LanguageSwitcher />
               
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -198,7 +205,7 @@ const Header = () => {
                 {/* Mobile Categories */}
                 {categoriesData?.categories && (
                   <div className="pt-4 border-t border-sidecar-300">
-                    <h3 className="text-sm font-semibold text-eternity-700 mb-3">Categories</h3>
+                    <h3 className="text-sm font-semibold text-eternity-700 mb-3">{t('categories')}</h3>
                     <div className="grid grid-cols-2 gap-2">
                       {categoriesData.categories.slice(0, 6).map((category) => (
                         <Link
@@ -207,7 +214,7 @@ const Header = () => {
                           className="flex items-center space-x-2 p-2 rounded-lg hover:bg-sidecar-100 transition-colors duration-200"
                         >
                           <FiGrid className="w-4 h-4 text-delta-500" />
-                          <span className="text-sm text-eternity-700">{category.name}</span>
+                          <span className="text-sm text-eternity-700">{t(category.slug) || category.name}</span>
                         </Link>
                       ))}
                     </div>

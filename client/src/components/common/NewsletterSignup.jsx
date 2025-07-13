@@ -4,10 +4,12 @@ import { FiMail, FiUser, FiTrendingUp, FiSend, FiAward } from 'react-icons/fi';
 import { useMutation } from 'react-query';
 import { apiService } from '../../utils/api';
 import toast from 'react-hot-toast';
+import { useTranslation } from '../../utils/translations';
 
 const NewsletterSignup = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const { t } = useTranslation();
 
   const subscribeMutation = useMutation(
     (data) => apiService.subscribeNewsletter(data),
@@ -49,10 +51,10 @@ const NewsletterSignup = () => {
               </div>
             </div>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Stay Connected & Updated!
+              {t('stayConnected')}
             </h2>
             <p className="text-xl text-sidecar-300 max-w-2xl mx-auto">
-              Get the latest culinary news, exclusive recipes, and industry insights delivered straight to your inbox
+              {t('newsletterSubtitle')}
             </p>
           </motion.div>
 

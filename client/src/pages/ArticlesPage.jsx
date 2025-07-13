@@ -98,7 +98,7 @@ const ArticlesPage = () => {
   return (
     <>
       <Helmet>
-        <title>News - UACP</title>
+        <title>{'Articles'}</title>
         <meta name="description" content="Browse all news about African chefs, culinary events, industry updates, and UACP activities. Find the latest insights from the African culinary world." />
       </Helmet>
 

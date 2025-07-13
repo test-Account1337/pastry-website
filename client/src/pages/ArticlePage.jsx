@@ -111,7 +111,7 @@ const ArticlePage = () => {
   return (
     <>
       <Helmet>
-        <title>{article.title || 'Article'} - UACP News</title>
+        <title>{(article?.metaTitle || article?.title || 'Article')}</title>
         <meta name="description" content={article.excerpt || 'Read the latest news from UACP'} />
         <meta property="og:title" content={article.title || 'UACP News Article'} />
         <meta property="og:description" content={article.excerpt || 'Read the latest news from UACP'} />

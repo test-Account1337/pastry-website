@@ -8,8 +8,10 @@ import { apiService, queryKeys } from '../utils/api';
 import ArticleCard from '../components/articles/ArticleCard';
 import CategoryCard from '../components/categories/CategoryCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useTranslation } from '../utils/translations';
 
 const HomePage = () => {
+  const { t } = useTranslation();
   // Fetch featured articles
   const { data: featuredData, isLoading: featuredLoading } = useQuery(
     queryKeys.articles.featured(),
@@ -61,7 +63,7 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>UACP - Union Africaine des Chefs Professionnels</title>
+        <title>{'UACP - Union Africaine des Chefs Professionnels'}</title>
         <meta name="description" content="Uniting African culinary professionals, promoting excellence, and advancing the gastronomy industry across the continent. Your premier source for African culinary news and insights." />
       </Helmet>
 
@@ -76,25 +78,25 @@ const HomePage = () => {
             className="text-center"
           >
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white text-shadow mb-6">
-              Union Africaine des
-              <span className="block text-alpine-300">Chefs Professionnels</span>
+              {t('heroTitleLine1')}
+              <span className="block text-alpine-300">{t('heroTitleLine2')}</span>
             </h1>
             <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-              Uniting African culinary professionals, promoting excellence, and advancing the gastronomy industry across the continent
+              {t('heroSubtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/articles"
                 className="btn-primary text-lg px-8 py-4 bg-alpine-400 text-eternity-900 hover:bg-alpine-300"
               >
-                Explore News
+                {t('heroBtnExplore')}
                 <FiArrowRight className="ml-2" />
               </Link>
               <Link
                 to="/about"
                 className="btn-outline text-lg px-8 py-4 border-alpine-300 text-alpine-300 hover:bg-alpine-300 hover:text-eternity-900"
               >
-                About UACP
+                {t('heroBtnAbout')}
               </Link>
             </div>
           </motion.div>
@@ -123,10 +125,10 @@ const HomePage = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold text-eternity-700 mb-4">
-              Featured Stories
+              {t('featuredStories')}
             </h2>
             <p className="text-lg text-eternity-600 max-w-2xl mx-auto">
-              Handpicked articles showcasing the best of culinary innovation, technique, and creativity
+              {t('featuredStoriesDesc')}
             </p>
           </motion.div>
 
@@ -159,7 +161,7 @@ const HomePage = () => {
               to="/articles"
               className="btn-primary text-lg px-8 py-3 inline-flex items-center"
             >
-              View All News
+              {t('viewAllNews')}
               <FiArrowRight className="ml-2" />
             </Link>
           </motion.div>
@@ -177,10 +179,10 @@ const HomePage = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold text-eternity-700 mb-4">
-              Explore Categories
+              {t('exploreCategories')}
             </h2>
             <p className="text-lg text-eternity-600 max-w-2xl mx-auto">
-              Dive into specific areas of culinary arts that interest you most
+              {t('exploreCategoriesDesc')}
             </p>
           </motion.div>
 
@@ -215,10 +217,10 @@ const HomePage = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold text-eternity-700 mb-4">
-              Latest News
+              {t('latestNews')}
             </h2>
             <p className="text-lg text-eternity-600 max-w-2xl mx-auto">
-              Stay updated with the freshest content from the culinary world
+              {t('latestNewsDesc')}
             </p>
           </motion.div>
 
@@ -253,10 +255,10 @@ const HomePage = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Join Our Community
+              {t('joinCommunity')}
             </h2>
             <p className="text-xl text-sidecar-300 max-w-2xl mx-auto">
-              Connect with African culinary professionals and enthusiasts worldwide
+              {t('joinCommunityDesc')}
             </p>
           </motion.div>
 
@@ -269,19 +271,19 @@ const HomePage = () => {
           >
             <motion.div variants={itemVariants} className="space-y-2">
               <div className="text-3xl md:text-4xl font-bold text-alpine-300">500+</div>
-              <div className="text-sidecar-300">Articles Published</div>
+              <div className="text-sidecar-300">{t('articlesPublished')}</div>
             </motion.div>
             <motion.div variants={itemVariants} className="space-y-2">
               <div className="text-3xl md:text-4xl font-bold text-alpine-300">50+</div>
-              <div className="text-sidecar-300">Expert Chefs</div>
+              <div className="text-sidecar-300">{t('expertChefs')}</div>
             </motion.div>
             <motion.div variants={itemVariants} className="space-y-2">
               <div className="text-3xl md:text-4xl font-bold text-alpine-300">10K+</div>
-              <div className="text-sidecar-300">Monthly Readers</div>
+              <div className="text-sidecar-300">{t('monthlyReaders')}</div>
             </motion.div>
             <motion.div variants={itemVariants} className="space-y-2">
               <div className="text-3xl md:text-4xl font-bold text-alpine-300">25+</div>
-              <div className="text-sidecar-300">Categories</div>
+              <div className="text-sidecar-300">{t('categories')}</div>
             </motion.div>
           </motion.div>
         </div>

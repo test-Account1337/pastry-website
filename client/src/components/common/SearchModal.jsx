@@ -10,14 +10,29 @@ const SearchModal = ({ isOpen, onClose, onSearch }) => {
   const [searchResults, setSearchResults] = useState([]);
 
   // Fetch search suggestions
-  const { data: suggestionsData } = useQuery(
-    queryKeys.articles.search(query),
-    () => apiService.searchArticles(query),
-    {
-      enabled: query.length >= 2,
-      staleTime: 2 * 60 * 1000,
+  const [suggestionsData, setSuggestionsData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (query.length >= 2) {
+      setIsLoading(true);
+      setError(null);
+      
+      fetch(`http://localhost:5000/api/articles/search/suggestions?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+          setSuggestionsData(data);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setError(err);
+          setIsLoading(false);
+        });
+    } else {
+      setSuggestionsData(null);
     }
-  );
+  }, [query]);
 
   useEffect(() => {
     if (suggestionsData?.suggestions) {
@@ -115,14 +130,31 @@ const SearchModal = ({ isOpen, onClose, onSearch }) => {
             <div className="max-h-96 overflow-y-auto">
               {query.length >= 2 && (
                 <div className="p-6">
-                  {searchResults.length > 0 ? (
+                  {isLoading ? (
+                    <div className="text-center py-8">
+                      <div className="text-4xl mb-4">⏳</div>
+                      <h3 className="text-lg font-medium text-mocha-700 mb-2">
+                        Searching...
+                      </h3>
+                    </div>
+                  ) : error ? (
+                    <div className="text-center py-8">
+                      <div className="text-4xl mb-4">❌</div>
+                      <h3 className="text-lg font-medium text-mocha-700 mb-2">
+                        Error loading results
+                      </h3>
+                      <p className="text-mocha-500">
+                        {error.message}
+                      </p>
+                    </div>
+                  ) : searchResults.length > 0 ? (
                     <div className="space-y-4">
                       <h3 className="text-sm font-semibold text-mocha-600 uppercase tracking-wide">
                         Search Results
                       </h3>
-                      {searchResults.map((result) => (
+                      {searchResults.map((result, index) => (
                         <div
-                          key={result._id}
+                          key={result.slug || index}
                           onClick={() => handleResultClick(result)}
                           className="p-4 rounded-lg hover:bg-cream-50 cursor-pointer transition-colors duration-200"
                         >
