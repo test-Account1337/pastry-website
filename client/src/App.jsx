@@ -31,6 +31,9 @@ import NotFoundPage from './pages/NotFoundPage';
 // Protected Route Component
 import ProtectedRoute from './components/auth/ProtectedRoute';
 
+// Common Components
+import ApiStatus from './components/common/ApiStatus';
+
 function App() {
   return (
     <AuthProvider>
@@ -97,6 +100,9 @@ function App() {
         {/* 404 Page */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      
+      {/* API Status Indicator (development only) */}
+      <ApiStatus />
     </AuthProvider>
   );
 }

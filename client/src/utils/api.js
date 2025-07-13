@@ -1,49 +1,144 @@
 import axios from 'axios';
 
-// Create axios instance
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000',
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+// API URL configuration with fallback
+const getApiUrl = () => {
+  // Priority order: Railway URL > Environment variable > localhost fallback
+  const railwayUrl = import.meta.env.VITE_RAILWAY_URL;
+  const envUrl = import.meta.env.VITE_API_URL;
+  const fallbackUrl = 'http://localhost:5000';
+  
+  return railwayUrl || envUrl || fallbackUrl;
+};
 
-// Request interceptor
-api.interceptors.request.use(
-  (config) => {
-    // Add auth token if available
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// Create axios instance with dynamic base URL
+const createApiInstance = (baseURL) => {
+  return axios.create({
+    baseURL,
+    timeout: 10000,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
 
-// Response interceptor
-api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    // Handle authentication errors
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/admin/login';
-    }
-    
-    // Handle network errors
-    if (!error.response) {
-      console.error('Network error:', error);
-    }
-    
-    return Promise.reject(error);
+// Health check function
+const checkApiHealth = async (url) => {
+  try {
+    const response = await axios.get(`${url}/api/health`, { timeout: 5000 });
+    return response.status === 200;
+  } catch (error) {
+    console.warn(`Health check failed for ${url}:`, error.message);
+    return false;
   }
-);
+};
+
+// Initialize API with fallback logic
+let api = createApiInstance(getApiUrl());
+let currentApiUrl = getApiUrl();
+
+// Function to switch API URL
+const switchApiUrl = async (newUrl) => {
+  if (newUrl !== currentApiUrl) {
+    console.log(`Switching API URL from ${currentApiUrl} to ${newUrl}`);
+    currentApiUrl = newUrl;
+    api = createApiInstance(newUrl);
+    
+    // Store current URL in localStorage for status component
+    localStorage.setItem('currentApiUrl', newUrl);
+    
+    // Re-add interceptors to new instance
+    setupInterceptors();
+  }
+};
+
+// Setup interceptors
+const setupInterceptors = () => {
+  // Request interceptor
+  api.interceptors.request.use(
+    (config) => {
+      // Add auth token if available
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+  // Response interceptor with automatic fallback
+  api.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    async (error) => {
+      // Handle authentication errors
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/admin/login';
+        return Promise.reject(error);
+      }
+      
+      // Handle network errors with automatic fallback
+      if (!error.response && error.code === 'ECONNABORTED') {
+        console.warn('Request timeout, checking for fallback...');
+        
+        // Try to switch to localhost if we're not already there
+        if (currentApiUrl !== 'http://localhost:5000') {
+          const localhostHealthy = await checkApiHealth('http://localhost:5000');
+          if (localhostHealthy) {
+            await switchApiUrl('http://localhost:5000');
+            // Retry the original request
+            const originalConfig = error.config;
+            originalConfig.baseURL = 'http://localhost:5000';
+            return api.request(originalConfig);
+          }
+        }
+      }
+      
+      // Handle other network errors
+      if (!error.response) {
+        console.error('Network error:', error);
+      }
+      
+      return Promise.reject(error);
+    }
+  );
+};
+
+// Initialize interceptors
+setupInterceptors();
+
+// Auto-detect best API URL on app startup
+export const initializeApi = async () => {
+  const railwayUrl = import.meta.env.VITE_RAILWAY_URL;
+  const envUrl = import.meta.env.VITE_API_URL;
+  
+  if (railwayUrl) {
+    console.log('Checking Railway API health...');
+    const railwayHealthy = await checkApiHealth(railwayUrl);
+    if (railwayHealthy) {
+      await switchApiUrl(railwayUrl);
+      console.log('✅ Using Railway API');
+      return;
+    }
+  }
+  
+  if (envUrl && envUrl !== 'http://localhost:5000') {
+    console.log('Checking environment API health...');
+    const envHealthy = await checkApiHealth(envUrl);
+    if (envHealthy) {
+      await switchApiUrl(envUrl);
+      console.log('✅ Using environment API');
+      return;
+    }
+  }
+  
+  console.log('✅ Using localhost API (fallback)');
+  await switchApiUrl('http://localhost:5000');
+};
 
 // API endpoints
 export const endpoints = {

@@ -6,6 +6,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'react-hot-toast';
 import './index.css';
 import App from './App';
+import { initializeApi } from './utils/api';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -18,8 +19,10 @@ const queryClient = new QueryClient({
   },
 });
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+// Initialize API with fallback logic
+initializeApi().then(() => {
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(
   <React.StrictMode>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
@@ -52,4 +55,5 @@ root.render(
       </QueryClientProvider>
     </HelmetProvider>
   </React.StrictMode>
-); 
+  );
+}); 
