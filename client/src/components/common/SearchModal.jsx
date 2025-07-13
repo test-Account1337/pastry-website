@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiSearch, FiX, FiArrowRight } from 'react-icons/fi';
+import { FiSearch, FiX, FiUser, FiBook, FiZap, FiTrendingUp, FiArrowRight } from 'react-icons/fi';
 import { useQuery } from 'react-query';
 import { apiService, queryKeys } from '../../utils/api';
 import { Link } from 'react-router-dom';
@@ -157,10 +157,10 @@ const SearchModal = ({ isOpen, onClose, onSearch }) => {
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
                     {[
-                      { name: 'Chef Interviews', href: '/category/chef-interviews', icon: '👨‍🍳' },
-                      { name: 'Recipes', href: '/category/recipes', icon: '📖' },
-                      { name: 'Techniques', href: '/category/techniques', icon: '⚡' },
-                      { name: 'Trends', href: '/category/pastry-trends', icon: '📈' },
+                      { name: 'Chef Interviews', href: '/category/chef-interviews', icon: FiUser },
+                      { name: 'Recipes', href: '/category/recipes', icon: FiBook },
+                      { name: 'Techniques', href: '/category/techniques', icon: FiZap },
+                      { name: 'Trends', href: '/category/pastry-trends', icon: FiTrendingUp },
                     ].map((category) => (
                       <Link
                         key={category.name}
@@ -168,7 +168,7 @@ const SearchModal = ({ isOpen, onClose, onSearch }) => {
                         onClick={onClose}
                         className="flex items-center space-x-3 p-3 rounded-lg hover:bg-cream-50 transition-colors duration-200"
                       >
-                        <span className="text-xl">{category.icon}</span>
+                        <category.icon className="w-5 h-5 text-delta-500" />
                         <span className="text-sm font-medium text-mocha-700">
                           {category.name}
                         </span>

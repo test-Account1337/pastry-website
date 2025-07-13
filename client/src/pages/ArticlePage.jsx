@@ -78,34 +78,44 @@ const ArticlePage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
+      <>
+        <Helmet>
+          <title>Loading Article - UACP News</title>
+        </Helmet>
+        <div className="min-h-screen flex items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      </>
     );
   }
 
   if (error || !article) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-mocha-500 mb-4">Article Not Found</h1>
-          <p className="text-mocha-600 mb-8">The article you're looking for doesn't exist.</p>
-          <Link to="/articles" className="btn-primary">
-            Browse Articles
-          </Link>
+      <>
+        <Helmet>
+          <title>Article Not Found - UACP News</title>
+        </Helmet>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-mocha-500 mb-4">Article Not Found</h1>
+            <p className="text-mocha-600 mb-8">The article you're looking for doesn't exist.</p>
+            <Link to="/articles" className="btn-primary">
+              Browse Articles
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
     <>
       <Helmet>
-        <title>{article.title} - Pastry News</title>
-        <meta name="description" content={article.excerpt} />
-        <meta property="og:title" content={article.title} />
-        <meta property="og:description" content={article.excerpt} />
-        <meta property="og:image" content={article.featuredImage} />
+        <title>{article.title || 'Article'} - UACP News</title>
+        <meta name="description" content={article.excerpt || 'Read the latest news from UACP'} />
+        <meta property="og:title" content={article.title || 'UACP News Article'} />
+        <meta property="og:description" content={article.excerpt || 'Read the latest news from UACP'} />
+        <meta property="og:image" content={article.featuredImage || ''} />
         <meta property="og:url" content={window.location.href} />
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>

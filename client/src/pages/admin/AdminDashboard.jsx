@@ -9,57 +9,41 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const AdminDashboard = () => {
   // Fetch dashboard data
-  const { data: dashboardData, isLoading } = useQuery(
-    ['dashboard', 'overview'],
-    async () => {
-      const [articles, categories, users] = await Promise.all([
-        apiService.getArticles({ page: 1, limit: 5 }),
-        apiService.getCategories(),
-        apiService.getAllUsers(),
-      ]);
-      
-      return {
-        articles: articles.articles || [],
-        categories: categories.categories || [],
-        users: users.users || [],
-        stats: {
-          totalArticles: articles.pagination?.total || 0,
-          totalCategories: categories.categories?.length || 0,
-          totalUsers: users.users?.length || 0,
-          publishedArticles: articles.articles?.filter(a => a.status === 'published').length || 0,
-        }
-      };
-    },
+  const { data: dashboardData, isLoading, error } = useQuery(
+    queryKeys.articles.dashboardStats(),
+    apiService.getDashboardStats,
     {
       staleTime: 5 * 60 * 1000,
+      retry: 1,
+      retryDelay: 1000,
     }
   );
 
   const stats = [
     {
       name: 'Total News',
-      value: dashboardData?.stats?.totalArticles || 0,
+      value: dashboardData?.stats?.articles?.total || 0,
       icon: FiFileText,
       color: 'bg-blue-500',
       href: '/admin/articles'
     },
     {
       name: 'Published News',
-      value: dashboardData?.stats?.publishedArticles || 0,
+      value: dashboardData?.stats?.articles?.published || 0,
       icon: FiEye,
       color: 'bg-green-500',
       href: '/admin/articles'
     },
     {
       name: 'Categories',
-      value: dashboardData?.stats?.totalCategories || 0,
+      value: dashboardData?.stats?.categories?.total || 0,
       icon: FiFolder,
       color: 'bg-purple-500',
       href: '/admin/categories'
     },
     {
       name: 'Users',
-      value: dashboardData?.stats?.totalUsers || 0,
+      value: dashboardData?.stats?.users?.total || 0,
       icon: FiUsers,
       color: 'bg-orange-500',
       href: '/admin/users'
@@ -92,6 +76,23 @@ const AdminDashboard = () => {
 
   if (isLoading) {
     return <LoadingSpinner size="lg" />;
+  }
+
+  if (error) {
+    return (
+      <div className="w-full max-w-5xl mx-auto px-4 py-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-red-800 mb-2">Server Connection Error</h2>
+          <p className="text-red-700 mb-4">
+            Unable to fetch dashboard data. Please make sure the server is running on port 5000.
+          </p>
+          <div className="text-sm text-red-600">
+            <p>To start the server, run:</p>
+            <code className="bg-red-100 px-2 py-1 rounded">cd server && npm start</code>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -174,7 +175,7 @@ const AdminDashboard = () => {
               </Link>
             </div>
             <div className="space-y-4">
-              {dashboardData?.articles?.slice(0, 5).map((article) => (
+              {dashboardData?.recentArticles?.slice(0, 5).map((article) => (
                 <div key={article._id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-sidecar-100">
                   <div className="w-12 h-12 bg-sidecar-200 rounded-lg flex items-center justify-center">
                     <FiFileText className="w-5 h-5 text-eternity-600" />
@@ -209,7 +210,7 @@ const AdminDashboard = () => {
               </Link>
             </div>
             <div className="space-y-4">
-              {dashboardData?.users?.slice(0, 5).map((user) => (
+              {dashboardData?.recentUsers?.slice(0, 5).map((user) => (
                 <div key={user._id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-sidecar-100">
                   <div className="w-12 h-12 bg-eternity-100 rounded-full flex items-center justify-center">
                     <FiUsers className="w-5 h-5 text-eternity-600" />

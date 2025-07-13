@@ -8,10 +8,11 @@ import {
   FiFilter, 
   FiGrid, 
   FiList,
-  FiClock,
+  FiChevronLeft,
+  FiChevronRight,
+  FiCalendar,
   FiTag,
-  FiUser,
-  FiX
+  FiCoffee
 } from 'react-icons/fi';
 import { apiService, queryKeys } from '../utils/api';
 import ArticleCard from '../components/articles/ArticleCard';
@@ -334,7 +335,9 @@ const SearchPage = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {!query ? (
               <div className="text-center py-16">
-                <div className="text-6xl mb-4">🔍</div>
+                <div className="text-6xl mb-4">
+                  <FiCoffee className="w-16 h-16 text-delta-400 mx-auto" />
+                </div>
                 <h2 className="text-2xl font-semibold text-mocha-700 mb-4">
                   Start Your Search
                 </h2>

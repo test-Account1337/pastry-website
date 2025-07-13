@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 class User {
   constructor(data = {}) {
     this.id = data.id || null;
+    this._id = data.id || data._id || null; // Add _id for frontend compatibility
     this.username = data.username || '';
     this.email = data.email || '';
     this.password = data.password || '';
@@ -75,6 +76,7 @@ class User {
       // Create new user
       const userRef = await db.ref('users').push(userData);
       this.id = userRef.key;
+      this._id = userRef.key; // Ensure _id is set for frontend compatibility
       this.createdAt = userData.createdAt;
       this.updatedAt = userData.updatedAt;
     }

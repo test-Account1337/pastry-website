@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FiMail, FiPhone, FiMapPin, FiTwitter, FiInstagram, FiFacebook, FiYoutube } from 'react-icons/fi';
+import { FiMail, FiPhone, FiMapPin, FiTwitter, FiInstagram, FiFacebook, FiYoutube, FiUser } from 'react-icons/fi';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -39,8 +39,14 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="text-3xl">👨‍🍳</div>
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="flex-shrink-0">
+                <img 
+                  src="/images/uacp_logo.png" 
+                  alt="UACP Logo" 
+                  className="w-12 h-12 object-contain"
+                />
+              </div>
               <div>
                 <h3 className="text-xl font-display font-bold">UACP</h3>
                 <p className="text-sm text-sidecar-300">Union Africaine des Chefs Professionnels</p>
@@ -59,11 +65,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-sidecar-300">
                 <FiPhone className="w-4 h-4" />
-                <span>+1 (555) 123-4567</span>
+                <span>+212 612-345678</span>
               </div>
               <div className="flex items-center space-x-3 text-sidecar-300">
                 <FiMapPin className="w-4 h-4" />
-                <span>123 Pastry Street, Culinary City, CC 12345</span>
+                <span>10 Rue de la Liberté, Casablanca, Maroc</span>
               </div>
             </div>
           </div>

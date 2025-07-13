@@ -222,7 +222,11 @@ const AboutPage = () => {
                 className="relative"
               >
                 <div className="bg-gradient-to-br from-pink-100 to-cream-100 p-8 rounded-lg">
-                  <div className="text-6xl mb-4">🍰</div>
+                  <div className="text-center py-16">
+                    <div className="text-6xl mb-4">
+                      <FiCoffee className="w-16 h-16 text-delta-400 mx-auto" />
+                    </div>
+                  </div>
                   <h3 className="text-xl font-semibold text-mocha-700 mb-3">
                     Join Our Community
                   </h3>

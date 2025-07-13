@@ -170,6 +170,161 @@ router.get('/featured', async (req, res) => {
   }
 });
 
+// @route   GET /api/articles/dashboard/stats
+// @desc    Get dashboard statistics
+// @access  Private (Admin/Editor)
+router.get('/dashboard/stats', [authenticateToken, requireAdminOrEditorOrAuthor], async (req, res) => {
+  try {
+    const articles = await Article.findAll();
+    const categories = await Category.findAll();
+    const users = await User.findAll();
+
+    // Calculate article statistics
+    const totalArticles = articles.length;
+    const publishedArticles = articles.filter(article => article.status === 'published').length;
+    const draftArticles = articles.filter(article => article.status === 'draft').length;
+    const archivedArticles = articles.filter(article => article.status === 'archived').length;
+    const featuredArticles = articles.filter(article => article.isFeatured).length;
+
+    // Calculate user statistics
+    const totalUsers = users.length;
+    const activeUsers = users.filter(user => user.isActive).length;
+    const adminUsers = users.filter(user => user.role === 'admin').length;
+    const editorUsers = users.filter(user => user.role === 'editor').length;
+    const authorUsers = users.filter(user => user.role === 'author').length;
+
+    // Get recent articles (last 5)
+    const recentArticles = articles
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5)
+      .map(async (article) => {
+        const authorData = await User.findById(article.author);
+        return {
+          ...article,
+          author: authorData ? {
+            _id: authorData._id,
+            firstName: authorData.firstName,
+            lastName: authorData.lastName,
+            avatar: authorData.avatar
+          } : null
+        };
+      });
+
+    // Get recent users (last 5)
+    const recentUsers = users
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5)
+      .map(user => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+
+    // Wait for all recent articles to be populated
+    const populatedRecentArticles = await Promise.all(recentArticles);
+
+    res.json({
+      stats: {
+        articles: {
+          total: totalArticles,
+          published: publishedArticles,
+          draft: draftArticles,
+          archived: archivedArticles,
+          featured: featuredArticles
+        },
+        categories: {
+          total: categories.length
+        },
+        users: {
+          total: totalUsers,
+          active: activeUsers,
+          byRole: {
+            admin: adminUsers,
+            editor: editorUsers,
+            author: authorUsers
+          }
+        }
+      },
+      recentArticles: populatedRecentArticles,
+      recentUsers
+    });
+  } catch (error) {
+    console.error('Get dashboard stats error:', error);
+    res.status(500).json({ 
+      message: 'Server error' 
+    });
+  }
+});
+
+// @route   GET /api/articles/admin
+// @desc    Get all articles for admin (including drafts, unpublished, etc.)
+// @access  Private (Admin/Editor/Author)
+router.get('/admin', [authenticateToken, requireAdminOrEditorOrAuthor], async (req, res) => {
+  try {
+    let articles = await Article.findAll();
+
+    // Filtering
+    const { search, category, status, page = 1, limit = 10 } = req.query;
+
+    if (status && status !== "") {
+      articles = articles.filter(article => article.status === status);
+    }
+    if (category && category !== "") {
+      articles = articles.filter(article => article.category === category);
+    }
+    if (search && search.trim() !== "") {
+      const searchTerm = search.toLowerCase();
+      articles = articles.filter(article =>
+        article.title.toLowerCase().includes(searchTerm) ||
+        article.excerpt.toLowerCase().includes(searchTerm) ||
+        article.content.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Pagination
+    const total = articles.length;
+    const totalPages = Math.ceil(total / limit);
+    const skip = (page - 1) * limit;
+    const paginatedArticles = articles.slice(skip, skip + parseInt(limit));
+
+    // Populate author and category data for each article
+    const populatedArticles = await Promise.all(
+      paginatedArticles.map(async (article) => {
+        const authorData = await User.findById(article.author);
+        const categoryData = await Category.findById(article.category);
+        return {
+          ...article,
+          author: authorData ? {
+            _id: authorData._id,
+            firstName: authorData.firstName,
+            lastName: authorData.lastName,
+            avatar: authorData.avatar
+          } : null,
+          category: categoryData ? {
+            _id: categoryData._id,
+            name: categoryData.name,
+            slug: categoryData.slug,
+            color: categoryData.color
+          } : null
+        };
+      })
+    );
+
+    res.json({
+      articles: populatedArticles,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        total,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    });
+  } catch (error) {
+    console.error('❌ Get admin articles error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/articles/:slug
 // @desc    Get article by slug
 // @access  Public

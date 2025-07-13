@@ -12,6 +12,13 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// Log Cloudinary configuration (without sensitive data)
+console.log('🔧 Cloudinary config:', {
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY ? '***' : 'NOT_SET',
+  api_secret: process.env.CLOUDINARY_API_SECRET ? '***' : 'NOT_SET'
+});
+
 // Configure multer for file uploads
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -38,24 +45,38 @@ router.post('/image', [
   upload.single('image')
 ], async (req, res) => {
   try {
+    console.log('📸 Image upload request received');
+    console.log('🔐 User authenticated:', req.user?.email);
+    
     if (!req.file) {
+      console.log('❌ No file in request');
       return res.status(400).json({ 
         message: 'No image file provided' 
       });
     }
 
+    console.log('📁 File received:', {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size
+    });
+
     // Convert buffer to base64
     const b64 = Buffer.from(req.file.buffer).toString('base64');
     const dataURI = `data:${req.file.mimetype};base64,${b64}`;
 
+    console.log('☁️ Uploading to Cloudinary...');
+
     // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(dataURI, {
-      folder: 'pastry-news',
+      folder: 'uacp-news',
       transformation: [
         { width: 1200, height: 800, crop: 'fill', quality: 'auto' },
         { fetch_format: 'auto' }
       ]
     });
+
+    console.log('✅ Image uploaded successfully:', result.public_id);
 
     res.json({
       message: 'Image uploaded successfully',
@@ -68,10 +89,24 @@ router.post('/image', [
       }
     });
   } catch (error) {
-    console.error('Image upload error:', error);
-    res.status(500).json({ 
-      message: 'Failed to upload image' 
+    console.error('❌ Image upload error:', error);
+    console.error('❌ Error details:', {
+      message: error.message,
+      code: error.code,
+      statusCode: error.http_code
     });
+    
+    if (error.http_code === 400) {
+      res.status(400).json({ 
+        message: 'Invalid image file or Cloudinary configuration error',
+        details: error.message
+      });
+    } else {
+      res.status(500).json({ 
+        message: 'Failed to upload image',
+        details: error.message
+      });
+    }
   }
 });
 

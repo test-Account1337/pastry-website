@@ -28,6 +28,42 @@ router.get('/', authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
+// @route   GET /api/users/admin
+// @desc    Get all users (admin only)
+// @access  Private (Admin)
+router.get('/admin', [authenticateToken, requireAdmin], async (req, res) => {
+  try {
+    const users = await User.findAll();
+    res.json({ users });
+  } catch (error) {
+    console.error('Get admin users error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @route   GET /api/users/public
+// @desc    Get all users (public, non-sensitive fields only)
+// @access  Public
+router.get('/public', async (req, res) => {
+  try {
+    const users = await User.findAll();
+    const publicUsers = users.map(user => ({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive,
+      createdAt: user.createdAt,
+      avatar: user.avatar
+    }));
+    res.json({ users: publicUsers });
+  } catch (error) {
+    console.error('Get public users error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // @route   GET /api/users/:id
 // @desc    Get user by ID (admin only)
 // @access  Private (Admin)

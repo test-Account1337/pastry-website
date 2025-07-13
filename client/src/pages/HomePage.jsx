@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FiArrowRight, FiClock, FiEye, FiHeart } from 'react-icons/fi';
+import { FiArrowRight, FiClock, FiEye, FiHeart, FiAward, FiCoffee, FiStar } from 'react-icons/fi';
 import { useQuery } from 'react-query';
 import { apiService, queryKeys } from '../utils/api';
 import ArticleCard from '../components/articles/ArticleCard';
@@ -101,9 +101,15 @@ const HomePage = () => {
         </div>
         
         {/* Decorative elements */}
-        <div className="absolute top-20 left-10 text-6xl opacity-20 animate-bounce-soft">🍰</div>
-        <div className="absolute top-40 right-20 text-4xl opacity-20 animate-bounce-soft" style={{ animationDelay: '1s' }}>🥐</div>
-        <div className="absolute bottom-20 left-20 text-5xl opacity-20 animate-bounce-soft" style={{ animationDelay: '2s' }}>🎂</div>
+        <div className="absolute top-20 left-10 text-6xl opacity-20 animate-bounce-soft">
+          <FiAward />
+        </div>
+        <div className="absolute top-40 right-20 text-4xl opacity-20 animate-bounce-soft" style={{ animationDelay: '1s' }}>
+          <FiCoffee />
+        </div>
+        <div className="absolute bottom-20 left-20 text-5xl opacity-20 animate-bounce-soft" style={{ animationDelay: '2s' }}>
+          <FiStar />
+        </div>
       </section>
 
       {/* Featured Articles Section */}

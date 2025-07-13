@@ -33,7 +33,7 @@ const AdminCategories = () => {
       staleTime: 5 * 60 * 1000,
     }
   );
-
+  console.log('categoriesData:', categoriesData);
   // Create category mutation
   const createMutation = useMutation(apiService.createCategory, {
     onSuccess: () => {

@@ -11,10 +11,12 @@ const router = express.Router();
 // @access  Public
 router.get('/', async (req, res) => {
   try {
+    console.log('🔍 Fetching categories...');
     const categories = await Category.getWithCount();
+    console.log(`✅ Found ${categories.length} categories:`, categories.map(c => c.name));
     res.json({ categories });
   } catch (error) {
-    console.error('Get categories error:', error);
+    console.error('❌ Get categories error:', error);
     res.status(500).json({ 
       message: 'Server error' 
     });
@@ -29,10 +31,12 @@ router.get('/admin', [
   requireAdminOrEditor
 ], async (req, res) => {
   try {
+    console.log('🔍 Fetching admin categories...');
     const categories = await Category.findAll();
+    console.log(`✅ Found ${categories.length} admin categories:`, categories.map(c => c.name));
     res.json({ categories });
   } catch (error) {
-    console.error('Get admin categories error:', error);
+    console.error('❌ Get admin categories error:', error);
     res.status(500).json({ 
       message: 'Server error' 
     });

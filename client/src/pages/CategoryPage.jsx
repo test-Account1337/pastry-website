@@ -11,7 +11,8 @@ import {
   FiChevronRight,
   FiClock,
   FiUser,
-  FiEye
+  FiEye,
+  FiCoffee
 } from 'react-icons/fi';
 import { apiService, queryKeys } from '../utils/api';
 import ArticleCard from '../components/articles/ArticleCard';
@@ -262,7 +263,9 @@ const CategoryPage = () => {
               </>
             ) : (
               <div className="text-center py-16">
-                <div className="text-6xl mb-4">🍰</div>
+                <div className="text-6xl mb-4">
+                  <FiCoffee className="w-16 h-16 text-delta-400 mx-auto" />
+                </div>
                 <h3 className="text-2xl font-semibold text-mocha-700 mb-2">
                   No articles found
                 </h3>
@@ -310,7 +313,7 @@ const CategoryPage = () => {
                       className="block bg-white p-6 rounded-lg shadow-sm border border-cream-200 hover:shadow-md transition-shadow text-center"
                     >
                       <div className="bg-pink-100 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <span className="text-2xl">🍰</span>
+                        <FiCoffee className="w-6 h-6 text-delta-500" />
                       </div>
                       <h3 className="font-semibold text-mocha-700 mb-2">
                         {relatedCategory.name}

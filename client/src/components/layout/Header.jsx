@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FiSearch, FiMenu, FiX, FiUser } from 'react-icons/fi';
+import { FiSearch, FiMenu, FiX, FiUser, FiChevronDown, FiGrid } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import SearchModal from '../common/SearchModal';
 import { useQuery } from 'react-query';
@@ -94,8 +94,9 @@ const Header = () => {
               {/* Categories Dropdown */}
               {categoriesData?.categories && (
                 <div className="relative group">
-                  <button className="text-sm font-medium text-eternity-600 hover:text-eternity-700 transition-colors duration-200">
-                    Categories
+                  <button className="text-sm font-medium text-eternity-600 hover:text-eternity-700 transition-colors duration-200 flex items-center space-x-1">
+                    <span>Categories</span>
+                    <FiChevronDown className="w-4 h-4" />
                   </button>
                   <div className="absolute top-full left-0 mt-2 w-64 bg-white-rock-400 rounded-lg shadow-large border border-sidecar-300 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                     <div className="py-2">
@@ -106,7 +107,7 @@ const Header = () => {
                           className="block px-4 py-2 text-sm text-eternity-700 hover:bg-sidecar-100 transition-colors duration-200"
                         >
                           <div className="flex items-center space-x-2">
-                            <span>{category.icon}</span>
+                            <FiGrid className="w-4 h-4 text-delta-500" />
                             <span>{category.name}</span>
                             <span className="text-xs text-delta-500">({category.articleCount})</span>
                           </div>
@@ -205,7 +206,7 @@ const Header = () => {
                           to={`/category/${category.slug}`}
                           className="flex items-center space-x-2 p-2 rounded-lg hover:bg-sidecar-100 transition-colors duration-200"
                         >
-                          <span>{category.icon}</span>
+                          <FiGrid className="w-4 h-4 text-delta-500" />
                           <span className="text-sm text-eternity-700">{category.name}</span>
                         </Link>
                       ))}

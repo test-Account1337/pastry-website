@@ -3,6 +3,7 @@ const { db } = require('../config/firebase');
 class Category {
   constructor(data = {}) {
     this.id = data.id || null;
+    this._id = data.id || data._id || null; // Add _id for frontend compatibility
     this.name = data.name || '';
     this.slug = data.slug || '';
     this.description = data.description || '';
@@ -68,6 +69,7 @@ class Category {
       // Create new category
       const categoryRef = await db.ref('categories').push(categoryData);
       this.id = categoryRef.key;
+      this._id = categoryRef.key; // Ensure _id is set for frontend compatibility
       this.createdAt = categoryData.createdAt;
       this.updatedAt = categoryData.updatedAt;
     }

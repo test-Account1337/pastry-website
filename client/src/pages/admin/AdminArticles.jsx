@@ -58,7 +58,7 @@ const AdminArticles = () => {
   // Delete article mutation
   const deleteMutation = useMutation(apiService.deleteArticle, {
     onSuccess: () => {
-      queryClient.invalidateQueries(queryKeys.articles.adminList());
+      queryClient.invalidateQueries([...queryKeys.articles.all, 'admin']);
       setSelectedArticles([]);
     },
   });
@@ -66,7 +66,7 @@ const AdminArticles = () => {
   // Bulk delete mutation
   const bulkDeleteMutation = useMutation(apiService.bulkDeleteArticles, {
     onSuccess: () => {
-      queryClient.invalidateQueries(queryKeys.articles.adminList());
+      queryClient.invalidateQueries([...queryKeys.articles.all, 'admin']);
       setSelectedArticles([]);
     },
   });
@@ -74,7 +74,7 @@ const AdminArticles = () => {
   // Toggle article status mutation
   const toggleStatusMutation = useMutation(apiService.toggleArticleStatus, {
     onSuccess: () => {
-      queryClient.invalidateQueries(queryKeys.articles.adminList());
+      queryClient.invalidateQueries([...queryKeys.articles.all, 'admin']);
     },
   });
 
@@ -96,10 +96,10 @@ const AdminArticles = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedArticles.length === articlesData?.data?.articles?.length) {
+    if (selectedArticles.length === articlesData?.articles?.length) {
       setSelectedArticles([]);
     } else {
-      setSelectedArticles(articlesData?.data?.articles?.map(article => article._id) || []);
+      setSelectedArticles(articlesData?.articles?.map(article => article._id) || []);
     }
   };
 
@@ -125,6 +125,23 @@ const AdminArticles = () => {
     );
   };
 
+  // Replace onChange handlers for search, category, and status with handlers that also reset currentPage to 1
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleStatusChange = (e) => {
+    setStatusFilter(e.target.value);
+    setCurrentPage(1);
+  };
+
   return (
     <>
       <Helmet>
@@ -137,7 +154,7 @@ const AdminArticles = () => {
           <div>
             <h1 className="text-3xl font-bold text-eternity-700 mb-2">Manage News</h1>
             <p className="text-eternity-600">
-              {articlesData?.total || 0} news items total
+              {(articlesData?.pagination?.total ?? articlesData?.articles?.length ?? 0)} news items total
             </p>
           </div>
           
@@ -164,7 +181,7 @@ const AdminArticles = () => {
                   type="text"
                   placeholder="Search by title..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={handleSearchChange}
                   className="w-full pl-10 pr-4 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
                 />
               </div>
@@ -177,7 +194,7 @@ const AdminArticles = () => {
               </label>
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={handleCategoryChange}
                 className="w-full px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
               >
                 <option value="">All Categories</option>
@@ -196,7 +213,7 @@ const AdminArticles = () => {
               </label>
               <select
                 value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                onChange={handleStatusChange}
                 className="w-full px-3 py-2 border border-sidecar-300 rounded-lg focus:ring-2 focus:ring-eternity-500 focus:border-transparent"
               >
                 <option value="">All Status</option>
@@ -234,7 +251,7 @@ const AdminArticles = () => {
                     <th className="px-6 py-3 text-left">
                       <input
                         type="checkbox"
-                        checked={selectedArticles.length === articlesData?.data?.articles?.length && articlesData?.data?.articles?.length > 0}
+                        checked={selectedArticles.length === articlesData?.articles?.length && articlesData?.articles?.length > 0}
                         onChange={handleSelectAll}
                         className="rounded border-sidecar-300 text-eternity-600 focus:ring-eternity-500"
                       />
@@ -260,7 +277,7 @@ const AdminArticles = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-sidecar-300">
-                  {articlesData?.data?.articles?.map((article) => (
+                  {articlesData?.articles?.map((article) => (
                     <motion.tr
                       key={article._id}
                       initial={{ opacity: 0 }}
@@ -321,7 +338,7 @@ const AdminArticles = () => {
                             <FiEye />
                           </Link>
                           <Link
-                            to={`/admin/articles/edit/${article._id}`}
+                            to={`/admin/articles/edit/${article.slug}`}
                             className="text-blue-400 hover:text-blue-600"
                             title="Edit"
                           >
@@ -350,11 +367,11 @@ const AdminArticles = () => {
             </div>
 
             {/* Pagination */}
-            {articlesData?.data?.pagination?.totalPages > 1 && (
+            {articlesData?.pagination?.totalPages > 1 && (
               <div className="px-6 py-4 border-t border-cream-200">
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-mocha-500">
-                    Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, articlesData.data.pagination.total)} of {articlesData.data.pagination.total} results
+                    Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, articlesData.pagination.total)} of {articlesData.pagination.total} results
                   </div>
                   <div className="flex space-x-2">
                     <button
@@ -365,11 +382,11 @@ const AdminArticles = () => {
                       Previous
                     </button>
                     <span className="px-3 py-1 text-mocha-700">
-                      Page {currentPage} of {articlesData.data.pagination.totalPages}
+                      Page {currentPage} of {articlesData.pagination.totalPages}
                     </span>
                     <button
                       onClick={() => setCurrentPage(currentPage + 1)}
-                      disabled={currentPage === articlesData.data.pagination.totalPages}
+                      disabled={currentPage === articlesData.pagination.totalPages}
                       className="px-3 py-1 border border-mocha-200 rounded hover:bg-mocha-50 disabled:opacity-50"
                     >
                       Next

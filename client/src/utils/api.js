@@ -44,9 +44,6 @@ const switchApiUrl = async (newUrl) => {
     currentApiUrl = newUrl;
     api = createApiInstance(newUrl);
     
-    // Store current URL in localStorage for status component
-    localStorage.setItem('currentApiUrl', newUrl);
-    
     // Re-add interceptors to new instance
     setupInterceptors();
   }
@@ -142,6 +139,7 @@ export const endpoints = {
     related: (id) => `/api/articles/${id}/related`,
     bulkDelete: '/api/articles/bulk-delete',
     toggleStatus: (id) => `/api/articles/${id}/status`,
+    dashboardStats: '/api/articles/dashboard/stats',
   },
   
   // Categories
@@ -199,8 +197,8 @@ export const apiService = {
   // Articles
   getArticles: (params) => api.get(endpoints.articles.list, { params }),
   getFeaturedArticles: () => api.get(endpoints.articles.featured),
-  getArticle: (slug) => api.get(endpoints.articles.single(slug)),
-  getArticleBySlug: (slug) => api.get(endpoints.articles.single(slug)),
+  getArticle: (slug) => api.get(endpoints.articles.single(slug)).then(res => res.data.article),
+  getArticleBySlug: (slug) => api.get(endpoints.articles.single(slug)).then(res => res.data.article),
   getRelatedArticles: (articleId, categoryId) => api.get(endpoints.articles.related(articleId), { params: { category: categoryId } }),
   searchArticles: (params) => api.get('/api/articles/search', { params }),
   createArticle: (data) => api.post(endpoints.articles.create, data),
@@ -210,10 +208,14 @@ export const apiService = {
   toggleArticleStatus: (data) => api.put(endpoints.articles.toggleStatus(data.id), data),
   likeArticle: (id) => api.post(endpoints.articles.like(id)),
   getArticlesByCategory: (slug, params) => api.get(endpoints.articles.byCategory(slug), { params }),
-  getAdminArticles: (params) => api.get(endpoints.articles.adminList, { params }),
+  getAdminArticles: (params) => api.get(endpoints.articles.adminList, { params }).then(res => res.data),
+  getDashboardStats: () => api.get(endpoints.articles.dashboardStats).then(res => res.data),
   
   // Categories
-  getCategories: () => api.get(endpoints.categories.list),
+  getCategories: () => {
+    console.log('🔍 Frontend: Calling getCategories API...');
+    return api.get(endpoints.categories.list).then(res => res.data);
+  },
   getCategory: (slug) => api.get(endpoints.categories.single(slug)),
   getCategoryBySlug: (slug) => api.get(endpoints.categories.single(slug)),
   getRelatedCategories: (categoryId) => api.get(endpoints.categories.related(categoryId)),
@@ -221,7 +223,7 @@ export const apiService = {
   updateCategory: (id, data) => api.put(endpoints.categories.update(id), data),
   deleteCategory: (id) => api.delete(endpoints.categories.delete(id)),
   toggleCategoryStatus: (id) => api.put(endpoints.categories.status(id)),
-  getAdminCategories: () => api.get(endpoints.categories.adminList),
+  getAdminCategories: () => api.get(endpoints.categories.adminList).then(res => res.data),
   
   // Users
   getAllUsers: () => api.get(endpoints.users.list),
@@ -233,6 +235,7 @@ export const apiService = {
   getAdminUsers: (params) => api.get(endpoints.users.adminList, { params }),
   toggleUserStatus: (data) => api.put(endpoints.users.toggleStatus(data.id), data),
   createUser: (data) => api.post(endpoints.users.list, data),
+  getPublicUsers: () => api.get('/api/users/public').then(res => res.data.users),
   
   // Contact
   sendContact: (data) => api.post(endpoints.contact.send, data),
@@ -240,10 +243,30 @@ export const apiService = {
   subscribeNewsletter: (data) => api.post(endpoints.contact.newsletter, data),
   
   // Upload
-  uploadImage: (formData) => api.post(endpoints.upload.image, formData),
-  uploadAvatar: (formData) => api.post(endpoints.upload.avatar, formData),
-  uploadFeaturedImage: (formData) => api.post(endpoints.upload.featuredImage, formData),
-  uploadMultipleImages: (formData) => api.post(endpoints.upload.multiple, formData),
+  uploadImage: (formData) => api.post(endpoints.upload.image, formData, {
+    headers: {
+      'Content-Type': undefined, // Let browser set the correct Content-Type for FormData
+    },
+    timeout: 30000, // 30 seconds for image uploads
+  }),
+  uploadAvatar: (formData) => api.post(endpoints.upload.avatar, formData, {
+    headers: {
+      'Content-Type': undefined,
+    },
+    timeout: 30000,
+  }),
+  uploadFeaturedImage: (formData) => api.post(endpoints.upload.featuredImage, formData, {
+    headers: {
+      'Content-Type': undefined,
+    },
+    timeout: 30000,
+  }),
+  uploadMultipleImages: (formData) => api.post(endpoints.upload.multiple, formData, {
+    headers: {
+      'Content-Type': undefined,
+    },
+    timeout: 30000,
+  }),
   deleteImage: (publicId) => api.delete(endpoints.upload.delete(publicId)),
   
   // Health check
@@ -259,10 +282,11 @@ export const queryKeys = {
     details: () => [...queryKeys.articles.all, 'detail'],
     detail: (slug) => [...queryKeys.articles.details(), slug],
     featured: () => [...queryKeys.articles.all, 'featured'],
-    adminList: () => [...queryKeys.articles.all, 'admin'],
+    adminList: (filters) => [...queryKeys.articles.all, 'admin', filters],
     byCategory: (slug) => [...queryKeys.articles.all, 'category', slug],
     related: (id) => [...queryKeys.articles.all, 'related', id],
     search: (params) => [...queryKeys.articles.all, 'search', params],
+    dashboardStats: () => [...queryKeys.articles.all, 'dashboard', 'stats'],
   },
   categories: {
     all: ['categories'],

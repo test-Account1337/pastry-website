@@ -3,6 +3,7 @@ const { db } = require('../config/firebase');
 class Article {
   constructor(data = {}) {
     this.id = data.id || null;
+    this._id = data.id || data._id || null; // Add _id for frontend compatibility
     this.title = data.title || '';
     this.slug = data.slug || '';
     this.excerpt = data.excerpt || '';
@@ -116,6 +117,7 @@ class Article {
       // Create new article
       const articleRef = await db.ref('articles').push(articleData);
       this.id = articleRef.key;
+      this._id = articleRef.key; // Ensure _id is set for frontend compatibility
       this.createdAt = articleData.createdAt;
       this.updatedAt = articleData.updatedAt;
     }

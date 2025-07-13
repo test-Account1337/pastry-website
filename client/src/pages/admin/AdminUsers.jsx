@@ -30,8 +30,8 @@ const AdminUsers = () => {
 
   // Fetch users
   const { data: usersData, isLoading } = useQuery(
-    queryKeys.users.adminList(),
-    apiService.getAdminUsers,
+    ['users', 'public'],
+    apiService.getPublicUsers,
     {
       staleTime: 5 * 60 * 1000,
     }
@@ -161,7 +161,7 @@ const AdminUsers = () => {
           <div>
             <h1 className="text-3xl font-bold text-mocha-700 mb-2">Manage Users</h1>
             <p className="text-mocha-600">
-              {usersData?.users?.length || 0} users total
+              {usersData?.length || 0} users total
             </p>
           </div>
           
@@ -203,7 +203,7 @@ const AdminUsers = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-cream-200">
-                      {usersData?.users?.map((user) => (
+                      {usersData?.map((user) => (
                         <motion.tr
                           key={user._id}
                           initial={{ opacity: 0 }}
@@ -217,7 +217,7 @@ const AdminUsers = () => {
                               </div>
                               <div>
                                 <div className="text-sm font-medium text-mocha-900">
-                                  {user.name}
+                                  {user.firstName || ''} {user.lastName || ''}
                                 </div>
                                 <div className="text-sm text-mocha-500">
                                   {user.email}
@@ -383,28 +383,28 @@ const AdminUsers = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-mocha-600">Total Users</span>
                     <span className="font-semibold text-mocha-700">
-                      {usersData?.users?.length || 0}
+                      {usersData?.length || 0}
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-between">
                     <span className="text-mocha-600">Active Users</span>
                     <span className="font-semibold text-mocha-700">
-                      {usersData?.users?.filter(user => user.isActive).length || 0}
+                      {usersData?.filter(user => user.isActive).length || 0}
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-between">
                     <span className="text-mocha-600">Admins</span>
                     <span className="font-semibold text-mocha-700">
-                      {usersData?.users?.filter(user => user.role === 'admin').length || 0}
+                      {usersData?.filter(user => user.role === 'admin').length || 0}
                     </span>
                   </div>
                   
                   <div className="flex items-center justify-between">
                     <span className="text-mocha-600">Editors</span>
                     <span className="font-semibold text-mocha-700">
-                      {usersData?.users?.filter(user => user.role === 'editor').length || 0}
+                      {usersData?.filter(user => user.role === 'editor').length || 0}
                     </span>
                   </div>
                 </div>

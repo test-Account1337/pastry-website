@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiMail, FiSend } from 'react-icons/fi';
+import { FiMail, FiUser, FiTrendingUp, FiSend, FiAward } from 'react-icons/fi';
 import { useMutation } from 'react-query';
 import { apiService } from '../../utils/api';
 import toast from 'react-hot-toast';
@@ -49,7 +49,7 @@ const NewsletterSignup = () => {
               </div>
             </div>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Stay Connected & Updated! 👨‍🍳
+              Stay Connected & Updated!
             </h2>
             <p className="text-xl text-sidecar-300 max-w-2xl mx-auto">
               Get the latest culinary news, exclusive recipes, and industry insights delivered straight to your inbox
@@ -113,21 +113,27 @@ const NewsletterSignup = () => {
             className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8"
           >
             <div className="text-center">
-              <div className="text-2xl mb-2">🎂</div>
+              <div className="text-2xl mb-2">
+                <FiTrendingUp className="w-8 h-8 text-alpine-400 mx-auto" />
+              </div>
               <h3 className="font-semibold mb-2">Exclusive Recipes</h3>
               <p className="text-sm text-sidecar-300">
                 Get access to premium African recipes from top chefs
               </p>
             </div>
             <div className="text-center">
-              <div className="text-2xl mb-2">👨‍🍳</div>
+              <div className="text-2xl mb-2">
+                <FiAward className="w-8 h-8 text-alpine-400 mx-auto" />
+              </div>
               <h3 className="font-semibold mb-2">Chef Interviews</h3>
               <p className="text-sm text-sidecar-300">
                 Behind-the-scenes insights from African culinary masters
               </p>
             </div>
             <div className="text-center">
-              <div className="text-2xl mb-2">📈</div>
+              <div className="text-2xl mb-2">
+                <FiTrendingUp className="w-8 h-8 text-alpine-400 mx-auto" />
+              </div>
               <h3 className="font-semibold mb-2">Industry Trends</h3>
               <p className="text-sm text-sidecar-300">
                 Stay ahead with the latest African culinary innovations

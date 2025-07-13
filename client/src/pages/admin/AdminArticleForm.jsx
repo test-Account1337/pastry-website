@@ -38,6 +38,8 @@ const AdminArticleForm = () => {
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
 
+  const DEFAULT_FEATURED_IMAGE = '/images/default-featured.jpg';
+
   // Fetch article for editing
   const { data: article, isLoading: articleLoading } = useQuery(
     queryKeys.articles.detail(id),
@@ -62,7 +64,7 @@ const AdminArticleForm = () => {
     isEditing ? apiService.updateArticle : apiService.createArticle,
     {
       onSuccess: (data) => {
-        queryClient.invalidateQueries(queryKeys.articles.adminList());
+        queryClient.invalidateQueries([...queryKeys.articles.all, 'admin']);
         queryClient.invalidateQueries(queryKeys.articles.lists());
         navigate('/admin/articles');
       },
@@ -121,17 +123,45 @@ const AdminArticleForm = () => {
 
     setImageUploading(true);
     try {
+      console.log('📁 Frontend: File selected:', {
+        name: file.name,
+        type: file.type,
+        size: file.size
+      });
+
       const formData = new FormData();
       formData.append('image', file);
       
+      console.log('📤 Frontend: Sending FormData...');
       const response = await apiService.uploadImage(formData);
-      setFormData(prev => ({
-        ...prev,
-        featuredImage: response.url
-      }));
+      console.log('✅ Frontend: Upload successful:', response);
+      
+      // Handle both response formats
+      const imageUrl = response.data?.image?.url || response.data?.url || response.image?.url || response.url;
+      
+      if (imageUrl) {
+        setFormData(prev => ({
+          ...prev,
+          featuredImage: imageUrl
+        }));
+        console.log('✅ Frontend: Image URL set:', imageUrl);
+      } else {
+        console.error('❌ Frontend: No image URL in response:', response);
+        alert('Upload successful but no image URL received');
+      }
     } catch (error) {
-      console.error('Image upload error:', error);
-      alert('Error uploading image. Please try again.');
+      console.error('❌ Frontend: Image upload error:', error);
+      let errorMessage = 'Error uploading image. Please try again.';
+      
+      if (error.response?.status === 400) {
+        errorMessage = 'Invalid image file. Please select a valid image.';
+      } else if (error.response?.status === 401) {
+        errorMessage = 'Authentication required. Please log in again.';
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Server error. Please check if the server is running and Cloudinary is configured.';
+      }
+      
+      alert(errorMessage);
     } finally {
       setImageUploading(false);
     }
@@ -150,11 +180,20 @@ const AdminArticleForm = () => {
       return;
     }
 
+    if (!formData.category) {
+      alert('Please select a category for the article.');
+      return;
+    }
+
+    // Use default image if none uploaded
+    const featuredImage = formData.featuredImage || DEFAULT_FEATURED_IMAGE;
+
     const submitData = {
       ...formData,
       title: formData.title.trim(),
       excerpt: formData.excerpt.trim(),
-      content: formData.content.trim()
+      content: formData.content.trim(),
+      featuredImage,
     };
 
     if (isEditing) {
@@ -351,6 +390,7 @@ const AdminArticleForm = () => {
                   value={formData.category}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-mocha-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                  required
                 >
                   <option value="">Select Category</option>
                   {categoriesData?.categories?.map((category) => (

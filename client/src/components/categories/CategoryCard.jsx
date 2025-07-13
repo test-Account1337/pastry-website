@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { FiGrid } from 'react-icons/fi';
 
 const CategoryCard = ({ category, className = '' }) => {
   return (
@@ -9,7 +10,9 @@ const CategoryCard = ({ category, className = '' }) => {
       className={`card card-hover text-center ${className}`}
     >
       <Link to={`/category/${category.slug}`} className="block p-6">
-        <div className="text-4xl mb-4">{category.icon}</div>
+        <div className="text-4xl mb-4">
+          <FiGrid className="mx-auto text-delta-500" />
+        </div>
         
         <h3 className="text-lg font-display font-bold text-eternity-700 mb-2">
           {category.name}
