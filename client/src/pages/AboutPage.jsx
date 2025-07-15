@@ -16,32 +16,32 @@ import NewsletterSignup from '../components/common/NewsletterSignup';
 
 const AboutPage = () => {
   const stats = [
-    { icon: FiUsers, number: '500+', label: 'Chef Interviews' },
-    { icon: FiBookOpen, number: '1000+', label: 'Articles Published' },
-    { icon: FiGlobe, number: '50+', label: 'Countries Reached' },
-    { icon: FiStar, number: '10K+', label: 'Happy Readers' },
+    { icon: FiUsers, number: '1000+', label: 'Chefs & Members' },
+    { icon: FiGlobe, number: '54', label: 'African Countries' },
+    { icon: FiAward, number: '20+', label: 'International Awards' },
+    { icon: FiStar, number: '50+', label: 'Events & Competitions' },
   ];
 
   const values = [
     {
       icon: FiHeart,
-      title: 'Passion for Pastry',
-      description: 'We share the same passion for pastry arts that drives chefs around the world to create extraordinary desserts.'
+      title: 'Unity & Collaboration',
+      description: 'We foster unity among African chefs, encouraging collaboration, cultural exchange, and mutual support across the continent.'
     },
     {
       icon: FiTarget,
-      title: 'Quality Content',
-      description: 'Every article is carefully crafted to provide valuable insights, techniques, and inspiration to our community.'
+      title: 'Excellence',
+      description: 'We are committed to raising the standards of culinary arts in Africa through training, innovation, and recognition of outstanding talent.'
     },
     {
       icon: FiUsers,
-      title: 'Community First',
-      description: 'We believe in building a supportive community where pastry professionals can connect, learn, and grow together.'
+      title: 'Empowerment',
+      description: 'We empower chefs and culinary professionals with resources, opportunities, and a strong network to help them thrive.'
     },
     {
       icon: FiAward,
-      title: 'Excellence',
-      description: 'We strive for excellence in everything we do, from the content we publish to the experiences we create.'
+      title: 'Cultural Heritage',
+      description: 'We celebrate and promote Africa’s rich and diverse culinary heritage, sharing it with the world.'
     }
   ];
 
@@ -69,8 +69,8 @@ const AboutPage = () => {
   return (
     <>
       <Helmet>
-        <title>{'About'}</title>
-        <meta name="description" content="Learn about Pastry News, our mission to connect the pastry community, and the team behind the premier source for pastry industry insights." />
+        <title>{'About UACP'}</title>
+        <meta name="description" content="Learn about the Union Africaine des Chefs Professionnels (UACP), our mission to unite, support, and advance African chefs and culinary professionals across the continent." />
       </Helmet>
 
       <div className="bg-white">
@@ -86,10 +86,10 @@ const AboutPage = () => {
             >
               <h1 className="text-4xl md:text-6xl font-display font-bold text-white text-shadow mb-6">
                 About
-                <span className="block text-pink-200">Pastry News</span>
+                <span className="block text-pink-200">UACP</span>
               </h1>
               <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-                Connecting pastry professionals worldwide through quality content, inspiration, and community
+                The Union Africaine des Chefs Professionnels (UACP) unites, supports, and advances African chefs and culinary professionals, promoting excellence and celebrating Africa’s rich gastronomic heritage.
               </p>
             </motion.div>
           </div>
@@ -109,10 +109,7 @@ const AboutPage = () => {
                 Our Mission
               </h2>
               <p className="text-lg text-mocha-600 max-w-4xl mx-auto leading-relaxed">
-                At Pastry News, we believe that pastry arts are more than just baking—they're a form of artistic expression, 
-                cultural heritage, and culinary innovation. Our mission is to be the premier platform that connects pastry 
-                professionals worldwide, sharing knowledge, inspiring creativity, and celebrating the incredible talent 
-                within our community.
+                UACP’s mission is to bring together chefs and culinary professionals from all African nations, fostering professional growth, cultural pride, and international recognition. We provide a platform for networking, education, and the promotion of African cuisine on the global stage.
               </p>
             </motion.div>
 
@@ -158,7 +155,7 @@ const AboutPage = () => {
                 Our Values
               </h2>
               <p className="text-lg text-mocha-600 max-w-2xl mx-auto">
-                The principles that guide everything we do at Pastry News
+                The principles that guide UACP in empowering Africa’s culinary community
               </p>
             </motion.div>
 
@@ -198,18 +195,13 @@ const AboutPage = () => {
                 </h2>
                 <div className="space-y-4 text-mocha-600 leading-relaxed">
                   <p>
-                    Pastry News was born from a simple observation: while the pastry world is full of incredible talent 
-                    and innovation, there wasn't a dedicated platform that truly captured the essence of this beautiful craft.
+                    UACP was founded to address the need for a unified voice and network for African chefs. Recognizing the immense talent and diversity across the continent, UACP set out to create opportunities for professional development, cultural exchange, and global recognition.
                   </p>
                   <p>
-                    Founded by a group of pastry professionals, food journalists, and passionate food lovers, we set out 
-                    to create a space where the pastry community could come together to share knowledge, celebrate achievements, 
-                    and inspire the next generation of pastry artists.
+                    Today, UACP is a vibrant community that organizes events, competitions, and training programs, and advocates for the interests of African chefs at home and abroad. We are proud to represent Africa’s culinary excellence on the world stage.
                   </p>
                   <p>
-                    Today, we're proud to serve as the premier destination for pastry news, featuring exclusive interviews 
-                    with world-renowned chefs, in-depth technique guides, industry insights, and stories that showcase the 
-                    incredible diversity and creativity within the pastry world.
+                    Join us as we continue to elevate African gastronomy, empower chefs, and inspire the next generation of culinary leaders.
                   </p>
                 </div>
               </motion.div>
@@ -228,10 +220,10 @@ const AboutPage = () => {
                     </div>
                   </div>
                   <h3 className="text-xl font-semibold text-mocha-700 mb-3">
-                    Join Our Community
+                    Join UACP
                   </h3>
                   <p className="text-mocha-600 mb-6">
-                    Be part of a growing community of pastry professionals, enthusiasts, and innovators.
+                    Become part of a dynamic network of African chefs and culinary professionals. Connect, learn, and grow with UACP.
                   </p>
                   <Link to="/contact" className="btn-primary">
                     Get in Touch
