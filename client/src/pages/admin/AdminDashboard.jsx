@@ -10,7 +10,8 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 const AdminDashboard = () => {
   // Fetch dashboard data
   const { data: dashboardData, isLoading, error } = useQuery(
-    queryKeys.articles.dashboardStats(),
+    // queryKeys.articles.dashboardStats(),
+    queryKeys.articles.adminList(),
     apiService.getDashboardStats,
     {
       staleTime: 5 * 60 * 1000,

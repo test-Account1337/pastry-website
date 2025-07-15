@@ -248,6 +248,7 @@ export const apiService = {
   
   // Health check
   healthCheck: () => api.get(endpoints.health),
+  getDashboardStats: () => api.get('/api/articles/dashboard/stats').then(res => res.data),
 };
 
 // Query keys for React Query
