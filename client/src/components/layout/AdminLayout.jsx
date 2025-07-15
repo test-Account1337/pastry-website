@@ -68,6 +68,13 @@ const AdminLayout = () => {
               >
                 View Site →
               </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center text-sm text-red-600 hover:text-red-800 transition-colors duration-200 border border-red-100 rounded px-3 py-1 ml-2"
+              >
+                <FiLogOut className="w-4 h-4 mr-1" />
+                Log Out
+              </button>
             </div>
           </div>
         </div>
